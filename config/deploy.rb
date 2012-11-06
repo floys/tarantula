@@ -2,7 +2,7 @@ $:.unshift(File.expand_path('./lib', ENV['rvm_path']))
 require "rvm/capistrano"
 
 set :rvm_ruby_string, '1.9.3'
-set :rvm_type, :root # Don't use system-wide RVM
+set :rvm_type, :system
 set :rvm_bin_path, "/home/user/.rvm/bin"
 
 set :application, "tarantula"
