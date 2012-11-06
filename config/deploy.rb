@@ -44,7 +44,7 @@ task :prepare_configs, :roles => :app do
   run %Q{ cp #{ production_config } #{ File.join release_path, 'config/environments/production.rb' } }
 end
 
-before "bundle:install", :prepare_configs
+before "bundle:install", :prepare_configs 
 
 	namespace :deploy do
 	 task(:start) {}
@@ -59,5 +59,4 @@ before "bundle:install", :prepare_configs
 		 run "echo 1"
 	 end
 	end
-end
 
