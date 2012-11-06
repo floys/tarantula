@@ -135,6 +135,8 @@ GEM
     ruby-oci8 (2.1.2)
     ruby-ole (1.2.11.4)
     rubyzip (0.9.9)
+    rvm-capistrano (1.2.7)
+      capistrano (>= 2.0.0)
     sass (3.2.1)
     sass-rails (3.2.5)
       railties (~> 3.2.0)
@@ -184,6 +186,7 @@ DEPENDENCIES
   rb-readline
   ruby-oci8 (>= 2.0.4)
   rubyzip
+  rvm-capistrano
   sass-rails (~> 3.2.3)
   spreadsheet (~> 0.6.5)
   therubyracer
