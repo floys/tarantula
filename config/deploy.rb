@@ -11,7 +11,7 @@ set :use_sudo, false
 
 default_run_options[:pty] = true
 default_environment['LD_LIBRARY_PATH'] = "#{ENV["ORACLE_HOME"]}/lib/"
-default_environment['NLS_LANG']='AMERICAN_CIS.UTF8'
+default_environment['NLS_LANG']='RUSSIAN_CIS.AL32UTF8'
 
 set :repository, "git@github.com:evgeniy-khatko/tarantula.git"
 set :branch, "master"
