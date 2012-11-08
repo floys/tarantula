@@ -24,6 +24,8 @@ gem 'passenger'
 gem 'capistrano'
 gem 'rvm-capistrano'
 gem 'git-up'
+gem 'debugger'
+gem 'rack-debug'
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
