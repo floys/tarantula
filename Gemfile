@@ -25,6 +25,7 @@ gem 'capistrano'
 gem 'rvm-capistrano'
 gem 'git-up'
 gem 'debugger'
+gem 'ruby-debug'
 gem 'rack-debug'
 # Gems used only for assets and not required
 # in production environments by default.
