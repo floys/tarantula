@@ -25,7 +25,9 @@ gem 'capistrano'
 gem 'rvm-capistrano'
 gem 'git-up'
 gem 'debugger'
-gem 'ruby-debug'
+gem 'linecache19', :git => 'git://github.com/mark-moseley/linecache'
+gem 'ruby-debug-base19x', '~> 0.11.30.pre4'
+gem 'ruby-debug19'
 gem 'rack-debug'
 # Gems used only for assets and not required
 # in production environments by default.

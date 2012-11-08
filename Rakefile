@@ -3,7 +3,7 @@
 # for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
 
 require File.expand_path('../config/application', __FILE__)
-#require 'rack-debug/tasks' if Rails.env.development?
+require 'rack-debug/tasks' if Rails.env.development?
 
 module ::Tarantula
   class Application
