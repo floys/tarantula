@@ -155,8 +155,6 @@ class Service
   end
   
   def create_or_update_ext_entity(klass, atts, tag_with, i_logger, opts={})  
-		puts 'HELLO'
-		puts atts
     if e = find_ext_entity(klass, atts)
       args = [e, atts, i_logger]
       args << opts unless opts.empty?

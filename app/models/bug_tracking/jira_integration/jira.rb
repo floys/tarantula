@@ -193,9 +193,6 @@ class Jira < BugTracker
     begin
       self.transaction do
         JiraProject.all.each do |proj|
-					debugger
-					puts '!!!!!!!'
-					puts proj.inspect
           eids << proj.id
           atts = {:name => proj.name, :external_id => proj.id,
                   :bug_tracker_id => self.id}
