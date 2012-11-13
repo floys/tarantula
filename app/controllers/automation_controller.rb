@@ -4,8 +4,8 @@ class AutomationController < ApplicationController
     c.require_permission(:any)
   end
 	# cd $AT_HOME && project="${project}" execution="${execution}" steps=${steps} bundle exec rspec -e "${test}" -r ./lib/CustomTarantulaFormatter.rb -f CustomTarantulaFormatter && bundle exec rake unblock_test["${project}","${execution}","${test}"]
-	def execute
-		@log = File.new(Rails.public_path+'/automation_tool.log',"w+")
+	def execute		
+		@log = File.new(Rails.public_path+"/at/#{@current_user.login}_#{Time.now.strftime("%Y%m%d_%H_%M")}.log","w+")
 		execution = Execution.find(params[:execution])
 		project = execution.project
 		at = AutomationTool.find(project.automation_tool_id)
@@ -16,7 +16,10 @@ class AutomationController < ApplicationController
 		Bundler.with_clean_env do
 			fork { exec "#{cmd} > #{@log.path} 2>&1" }
 		end
+		domen = request.protocol+request.host
+		domen+=":#{request.port}" if not request.port.nil?
+		domen+='/at/'
+		render :json => {:data => {:message => "#{at.name} started with command\n\'#{cmd}\'\n\nLog can be found here: #{domen}/#{File.basename(@log.path)}"}}
 		@log.close
-		render :json => {:data => {:message => "#{at.name} started with command\n\'#{cmd}\'"}}
 	end
 end
