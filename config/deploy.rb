@@ -1,5 +1,7 @@
-set :application, "tarantula"
+require 'rvm/capistrano' # Для работы rvm
+require 'bundler/capistrano' # Для работы bundler. При изменении гемов bundler автоматически обновит все гемы на сервере, чтобы они в точности соответствовали гемам разработчика. 
 
+set :application, "tarantula"
 set :domain, "192.168.24.181"
 role :web, domain
 role :app, domain
@@ -16,10 +18,8 @@ default_environment['NLS_LANG']='AMERICAN_AMERICA.CL8MSWIN1251'
 set :repository, "git@github.com:evgeniy-khatko/tarantula.git"
 set :branch, "master"
 set :scm, "git"
-
 set :scm_verbose, true
-
-#set :bundle_flags, "--quiet"
+set :deploy_via, :remote_cache # Указание на то, что стоит хранить кеш репозитария локально и с каждым деплоем лишь подтягивать произведенные изменения. Очень актуально для больших и тяжелых репозитариев.
 
 set :app_port, 80
 
