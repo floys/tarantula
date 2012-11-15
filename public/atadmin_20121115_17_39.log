@@ -1,0 +1,30 @@
++ cd /home/ekhatko/Work/kazan2013testing
++ project=Default Project
++ execution=testplan2
++ testcase=Passed test
++ project=Default Project execution=testplan2 bundle exec rspec -e Passed test -r ./lib/CustomTarantulaFormatter.rb -f CustomTarantulaFormatter
+/home/ekhatko/.rvm/gems/ruby-1.9.3-p0/bundler/gems/debugger-4fb6305f77e8/lib/ruby_debug.so: warning: already initialized constant VERSION
+Run options: include {:full_description=>/Passed\ test/}
+
+Passed test
+  Шаг 1 (FAILED - 1)
+
+Failures:
+
+  1) Passed test Шаг 1
+     Failure/Error: 1.should eq 2
+       
+       expected: 2
+            got: 1
+       
+       (compared using ==)
+     # ./spec/test_spec.rb:8:in `block (2 levels) in <top (required)>'
+
+Finished in 6.18 seconds
+1 example, 1 failure
+
+Failed examples:
+
+rspec ./spec/test_spec.rb:7 # Passed test Шаг 1
++ true
++ bundle exec rake unblock_test[Default Project,testplan2,Passed test]

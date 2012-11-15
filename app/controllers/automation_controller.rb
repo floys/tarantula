@@ -3,7 +3,6 @@ class AutomationController < ApplicationController
   before_filter do |c|
     c.require_permission(:any)
   end
-	# cd $AT_HOME && project="${project}" execution="${execution}" steps=${steps} bundle exec rspec -e "${test}" -r ./lib/CustomTarantulaFormatter.rb -f CustomTarantulaFormatter && bundle exec rake unblock_test["${project}","${execution}","${test}"]
 	def execute		
 		@log = File.new(Rails.public_path+"/at/#{@current_user.login}_#{Time.now.strftime("%Y%m%d_%H_%M")}.log","w+")
 		execution = Execution.find(params[:execution])

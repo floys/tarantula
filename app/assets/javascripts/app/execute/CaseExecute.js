@@ -1054,7 +1054,8 @@ var CaseExecute = function() {
 										// Server responds with
 										// cmd started on the server
 										alert (Ext.decode(response.responseText).data.message);
-										this.reloadCase();
+										setTimeout("reloadCase()",1000);
+										//this.reloadCase();
 								}
 						});
 				},

@@ -56,17 +56,15 @@ class ApiController < ApplicationController
 		testcase_execution.update_with_steps!({"duration" => attrs[:duration]},step_results,@current_user)
 		render :text => "testcase execution id = #{testcase_execution.id} updated"
 	end
+	def block_testcase_execution
+		attrs = params[:request]
+		testcase_execution = block_unblock(true,attrs)
+		render :text => "testcase execution id = #{testcase_execution.id} blocked"
+	end
 
 	def unblock_testcase_execution
 		attrs = params[:request]
-		project = Project.find_by_name(attrs[:project])
-		raise ApiError.new("Project not found", attrs[:project]) if project.nil?
-		# following assumptions are made:
-		# validates_uniqueness_of :name, :scope => :project_id (execution.rb)
-		# validates_uniqueness_of :title, :scope => :project_id (case.rb)
-		testcase_execution = CaseExecution.find_by_execution_id_and_case_id(project.executions.where(:name => attrs[:execution]).first, project.cases.where(:title => attrs[:testcase]).first)
-		raise ApiError.new("Case not found", "Test => #{attrs[:testcase]}, Execution => #{attrs[:execution]}") if testcase_execution.nil?
-		testcase_execution.update_attribute(:blocked, false)
+		testcase_execution = block_unblock(false,attrs)
 		render :text => "testcase execution id = #{testcase_execution.id} unblocked"
 	end
 
@@ -77,5 +75,16 @@ class ApiController < ApplicationController
 				set_current_user_and_project
 			end
 		end
+	end
+	def block_unblock(flag,attrs)
+		project = Project.find_by_name(attrs[:project])
+		raise ApiError.new("Project not found", attrs[:project]) if project.nil?
+		# following assumptions are made:
+		# validates_uniqueness_of :name, :scope => :project_id (execution.rb)
+		# validates_uniqueness_of :title, :scope => :project_id (case.rb)
+		testcase_execution = CaseExecution.find_by_execution_id_and_case_id(project.executions.where(:name => attrs[:execution]).first, project.cases.where(:title => attrs[:testcase]).first)
+		raise ApiError.new("Case not found", "Test => #{attrs[:testcase]}, Execution => #{attrs[:execution]}") if testcase_execution.nil?
+		testcase_execution.update_attribute(:blocked, flag)
+		testcase_execution
 	end
 end
