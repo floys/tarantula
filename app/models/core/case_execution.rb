@@ -4,7 +4,7 @@ A case execution. Reflects execution of a case.
 
 =end
 class CaseExecution < ActiveRecord::Base
-
+  extend CsvExchange::Model
   belongs_to :creator, :class_name => 'User', :foreign_key => 'created_by'
   belongs_to :test_case, :class_name => 'Case', :foreign_key => 'case_id'
 
@@ -199,14 +199,6 @@ class CaseExecution < ActiveRecord::Base
     avg_duration
   end
 
-  def to_csv(delimiter=';', line_feed="\r\n")
-    ret = CSV.generate(:col_sep => delimiter, :row_sep => line_feed) do |csv|
-      csv << [id, title, objective, test_data, preconditions_and_assumptions]
-
-    end
-    ret += self.step_executions.map{|se| se.to_csv(delimiter, line_feed)}.join
-  end
-
   def failed_steps_info
     failed = self.step_executions.find(:all, :conditions => {:result => Failed.to_s})
     return nil if failed.empty?
@@ -251,4 +243,12 @@ class CaseExecution < ActiveRecord::Base
   end
   def result=(r); self['result'] = r.db; end
 
+  define_csv do
+    attribute :id, 'Case Execution Id', :identifier => true
+    field :title, 'Case'
+    field :objective, 'Objective'
+    field :test_data, 'Test Data'
+    field :preconditions_and_assumptions, 'Preconditions & Assumptions'
+    children :step_executions
+  end
 end
