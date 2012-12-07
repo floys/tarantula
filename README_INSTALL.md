@@ -52,7 +52,7 @@ The differences are:
 17. install nginx server on your system
 18. install nginx passenger module with following command:     passenger-install-nginx-module
 19. configure nginx to use passenger module with adding following commands to your nginx.conf:  
-      `http {  
+      http {  
           passenger_root /path/to/rvm/.rvm/gems/ruby-1.9.3-p286/gems/passenger-3.0.18;  
           passenger_ruby path/to/rvm/.rvm/wrappers/ruby-1.9.3-p286/ruby;  
           passenger_default_user your_server_user;  
@@ -68,7 +68,7 @@ The differences are:
           passenger_enabled on;  
           charset utf-8;  
         }  
-      }`  
+      }  
 20. navigate to nginx listening port and test your installation
 
 P.S.
