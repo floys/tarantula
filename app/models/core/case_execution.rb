@@ -146,6 +146,7 @@ class CaseExecution < ActiveRecord::Base
 
 	def automated
 		tc = self.test_case
+    return false if tc.project.automation_tool.nil?
 		case_tags = tc.tags_to_s.split(",")
 		automation_tool_tag = tc.project.automation_tool.automation_tag
 		case_tags.include?(automation_tool_tag)

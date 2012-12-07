@@ -1,7 +1,17 @@
   class JiraIssue < ActiveRecord::Base
   UDMargin = 5.minutes # update margin
+  if ImportSource.find_by_name("Jira connection").adapter=~/oracle/
+    UPPER = false
+  else
+    UPPER = true
+  end
+  UPDATED =(UPPER)? 'UPDATED' : 'updated'
+  ID = (UPPER)? 'ID' : 'id'
+  SUMMARY = (UPPER)? 'SUMMARY' : 'summary'
+  DESC = (UPPER)? 'DESCRIPTION' : 'description'
+
   self.table_name = 'jiraissue'
-  self.primary_key = 'id'
+  self.primary_key = ID
 
   belongs_to :project, :class_name => 'JiraProject', :foreign_key => 'project'
   belongs_to :priority, :class_name => 'JiraPriority', :foreign_key => 'priority'
@@ -15,39 +25,39 @@
     else
       types = BT_CONFIG[:jira][:defect_types]
     end
-    conds += " AND (select pname from issuetype where id = jiraissue.issuetype) " +
+    conds += " AND (select pname from issuetype where #{ID} = jiraissue.issuetype) " +
         "IN (#{types.map{|t|"'%s'"%t}.join(',')})"
     unless force_update
-      conds += " AND ((UPDATED IS null) OR "+
-        "(UPDATED >= '#{(last_fetched-UDMargin).to_s(:db)}'))"
+      conds += " AND ((#{UPDATED} IS null) OR "+
+        "(#{UPDATED} >= '#{(last_fetched-UDMargin).to_s(:db)}'))"
     end
     where(conds)
   }
 
   scope :from_projects, lambda {|prids|
-    where('project' => prids)
+    where('PROJECT' => prids)
   }
 
   def to_data
     {
-      :lastdiffed => self['updated'],
-      :external_id => self['id'],
-      :name => self['summary'],
+      :lastdiffed => self[UPDATED],
+      :external_id => self[ID],
+      :name => self[SUMMARY],
       :status => self.status.value,
-      :desc => self['description']
+      :desc => self[DESC]
     }
   end
 
   def updated
-    self['updated']
+    self[UPDATED]
   end
 
   def summary
-    self['summary']
+    self[SUMMARY]
   end
 
   def desc
-    self['description']
+    self[DESC]
   end
 
   def url_part
