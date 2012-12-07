@@ -22,9 +22,9 @@ The differences are:
 7. Clone source code of the application: `git clone git@github.com:evgeniy-khatko/tarantula.git`  
 8. CD to $APPS/tarantula
 9. Install required ruby gems to run the app:  
-#### if you don't plan to integrate Tarantula with oracle hosted jira
+**if you don't plan to integrate Tarantula with oracle hosted jira**  
   `bundle install --without development oracle_enabled` 
-#### if you plan to integrate Tarantula with oracle hosted jira
+**if you plan to integrate Tarantula with oracle hosted jira**  
   install oracle development libraries with [oracle instant client](http://www.oracle.com/technetwork/topics/linuxx86-64soft-092277.html)   
   `bundle install --without development`   make sure that bundle install finishes successfully  
 10. Install mysql
