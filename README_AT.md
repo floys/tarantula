@@ -9,11 +9,11 @@
 - to get result from automation tool back to tarantula, tarantula API should be used (Update testcase execution method)
 
 *Integration workflow is following*
-1. Define Automation tool
-2. Tag tests, which are automated with automation tag, defined in step 1
-3. During test execution cogwheel is used to start test in automation mode
-4. After the test has been started in automation mode, Tarantula blocks it's manual execution, until Tarantula API call "Unblock testcase execution" is received
-5. It's expected that Automation tool makes two API calls after corresponding testcase had been executed: "Unblock testcase execution", "Update testcase execution with execution results"
+1. Define Automation tool  
+2. Tag tests, which are automated with automation tag, defined in step 1  
+3. During test execution cogwheel is used to start test in automation mode  
+4. After the test has been started in automation mode, Tarantula blocks it's manual execution, until Tarantula API call "Unblock testcase execution" is received  
+5. It's expected that Automation tool makes two API calls after corresponding testcase had been executed: "Unblock testcase execution", "Update testcase execution with execution results"  
 
 *Example with Automation tool = ruby RSPEC*
 

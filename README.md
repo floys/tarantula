@@ -11,7 +11,7 @@ GNU GPLv3.
 - integration with Test Automation Tools
 - more versalite jira integration
 
-for INSTALL instructions see README\_INSTALL.md
-for REST API see README\_REST\_API.md
-for Test Automation tool instructions see README\_AT.md
-for jira integration see README\_JIRA.md
+*for INSTALL instructions see README\_INSTALL.md*  
+*for REST API see README\_REST\_API.md*  
+*for Test Automation tool instructions see README\_AT.md*  
+*for jira integration see README\_JIRA.md*  
