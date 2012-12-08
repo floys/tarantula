@@ -168,6 +168,7 @@ class Execution < ActiveRecord::Base
     e = nil
     transaction do
       # 1) create execution
+      atts['date'] = atts['date'].split("T")[0]
       e = Execution.create!(atts)
       e.tag_with(tag_list) unless tag_list.blank?
 

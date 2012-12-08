@@ -119,7 +119,7 @@ class Case < ActiveRecord::Base
     transaction do
       ce_id = atts.delete(:case_execution_id)
       eid = atts.delete(:execution_id)
-
+      atts[:date]=atts[:date].split('T')[0]
       c = Case.create!(atts)
       c.steps << step_data.map{ |s| Step.new(s) }
       c.tag_with(tag_list) if tag_list
