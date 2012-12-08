@@ -144,6 +144,7 @@ class Jira < BugTracker
      :type => self["type"],
      :name => self.name,
      :base_url => self.base_url,
+     :db_adapter => self.import_source.adapter,
      :db_host => self.import_source.host,
      :db_port => self.import_source.port,
      :db_name => self.import_source.database,
@@ -165,7 +166,6 @@ class Jira < BugTracker
     se = StepExecution.find(opts[:step_execution_id])
     bp = BugProduct.find_by_name(opts[:product])
     name = se.case_execution.test_case.name
-    #comment = "[Tarantula] Case \"#{name}\", Step #{se.position}"
     comment = "[Tarantula] \n #{se.case_execution.represent_as_bug(se.position)}"
 
 
