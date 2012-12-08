@@ -9,12 +9,14 @@
   ID = (UPPER)? 'ID' : 'id'
   SUMMARY = (UPPER)? 'SUMMARY' : 'summary'
   DESC = (UPPER)? 'DESCRIPTION' : 'description'
+  PROJECT = (UPPER)? 'PROJECT' : 'project'
+  PRIORITY = (UPPER)? 'PRIORITY' : 'priority'
 
   self.table_name = 'jiraissue'
   self.primary_key = ID
 
-  belongs_to :project, :class_name => 'JiraProject', :foreign_key => 'project'
-  belongs_to :priority, :class_name => 'JiraPriority', :foreign_key => 'priority'
+  belongs_to :project, :class_name => 'JiraProject', :foreign_key => PROJECT
+  belongs_to :priority, :class_name => 'JiraPriority', :foreign_key => PRIORITY
   belongs_to :status, :class_name => 'JiraStatus', :foreign_key => 'issuestatus'
 
   scope :recent_from_projects, lambda {|prids, last_fetched, force_update|
@@ -28,15 +30,19 @@
     conds += " AND (select pname from issuetype where #{ID} = jiraissue.issuetype) " +
         "IN (#{types.map{|t|"'%s'"%t}.join(',')})"
     unless force_update
-      conds += " AND ((#{UPDATED} IS null) OR "+
-        "(#{UPDATED} >= '#{(last_fetched-UDMargin).to_s(:db)}'))"
+      conds += " AND ((UPDATED IS null) OR "+
+        "(UPDATED >= '#{(last_fetched-UDMargin).to_s(:db)}'))"
     end
     where(conds)
   }
 
   scope :from_projects, lambda {|prids|
-    where('PROJECT' => prids)
+    where(PROJECT => prids)
   }
+
+  def self.db_type=val
+    @@db_type = val
+  end
 
   def to_data
     {

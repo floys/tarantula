@@ -34,7 +34,6 @@ class Jira < BugTracker
     end
   end
 
-
   ### PUBLIC BUG TRACKER INTERFACE ###
   def bugs_for_project(proj, user=nil)
     if user and (ta = user.test_area(proj)) and ta.forced and !ta.bug_product_ids.empty?
