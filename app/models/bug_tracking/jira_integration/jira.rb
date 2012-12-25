@@ -166,7 +166,7 @@ class Jira < BugTracker
     se = StepExecution.find(opts[:step_execution_id])
     bp = BugProduct.find_by_name(opts[:product])
     name = se.case_execution.test_case.name
-    comment = "[Tarantula] \n #{se.case_execution.represent_as_bug(se.position)}"
+    comment = se.case_execution.represent_as_bug(se.position)
 
 
     url = self.base_url.chomp('/')

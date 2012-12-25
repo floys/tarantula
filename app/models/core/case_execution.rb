@@ -184,11 +184,12 @@ class CaseExecution < ActiveRecord::Base
     tc = self.test_case
 		bug_details="\nPreconditions\n  #{tc.preconditions_and_assumptions}\n"
 		bug_details+="Steps\n"
+    failed_step = nil
 		tc.steps.each{|step|
 			bug_details+="  #{step.position}. #{step.action}\n"
 			break if step.position == current_step_position
 		}
-		bug_details+="Results\n  \n"
+		bug_details+="Results\n #{self.step_executions[current_step_position-1].comment} \n"
 		bug_details+="Expected\n  \n"
 	end
 
