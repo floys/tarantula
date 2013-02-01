@@ -95,4 +95,4 @@ where body is
   
 This method can be invoked e.g. for integrating with a test automation tool
 
-Working example can be found here: 
+Working example can be found here: http://qamind.ru/?page_id=130&lang=en
