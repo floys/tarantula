@@ -8,14 +8,15 @@ class ApiController < ApplicationController
 
 	# example: Case.create_with_steps!({:created_by=>3,:updated_by=>3,:title => "Импорт", :date=>"2012-09-22T00:00:00",:priority=>"high", :time_estimate=>"", :objective=>"Цель",:test_data=>"Данные",:preconditions_and_assumptions=>"some prec",:test_area_ids=>[],:change_comment=>"Comment",:project_id=>1,:version=>1},[:version=>1,:position=>1,:action=>"step1",:result=>"res1"])
 	def create_testcase
-		attrs = params[:request][:testcase]
-		steps = attrs[:step]
+    raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if params["request"].nil? or params["request"]["testcase"].nil?
+		attrs = params["request"]["testcase"]
+		steps = attrs["step"]
 		steps.each{|s| 
-			s[:version] = 1
-			s[:position] = steps.index(s)+1
+			s["version"] = 1
+			s["position"] = steps.index(s)+1
 		}
-		project = Project.find_by_name(attrs[:project])
-		raise ApiError.new("Project not found", attrs[:project]) if project.nil?
+		project = Project.find_by_name(attrs["project"])
+		raise ApiError.new("Project not found", attrs["project"]) if project.nil?
 		c = Case.create_with_steps!({ # test attrs
 															:created_by => @current_user.id,
 															:updated_by => @current_user.id,
