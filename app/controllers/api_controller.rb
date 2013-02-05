@@ -37,7 +37,7 @@ class ApiController < ApplicationController
 
 	def update_testcase_execution
 		attrs = params[:request]
-    raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request")
+    raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if attrs.nil?
 		project = Project.find_by_name(attrs[:project])
 		raise ApiError.new("Project not found", attrs[:project]) if project.nil?
 		# following assumptions are made:
