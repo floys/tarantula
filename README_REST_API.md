@@ -4,7 +4,7 @@ The REST API is used in the sense of doing POST HTTP requests with XML-ed params
 
 #### Authentication
 
-[Basic http authentication](http://en.wikipedia.org/wiki/Basic_access_authentication) is used. Just provide a username and a password of existing tarantula user, who has enough privileges to perform actions below  
+[Basic http authentication](http://en.wikipedia.org/wiki/Basic_access_authentication) is used. Just provide a username and a password of existing tarantula user, who has **enough privileges** (admin user is recommended) to perform actions below. Also make sure that specified user is assigned to the project, you're going to update testcases from.
 The credentials are transmitted without encription. If you need more safety please request for SSL support  
 
 
@@ -14,7 +14,7 @@ The credentials are transmitted without encription. If you need more safety plea
   
 Following call will create new test case with specified parameters  
 
-		http://username:password@tarantula_url/api/create_testcase.xml  
+		curl -v -X POST -H 'Content-type: text/xml' -u user:password -d @create_testcase.xml http://tarantula_url/api/update_testcase_execution.xml  
    
 where body is  
 
@@ -25,7 +25,7 @@ where body is
 			</testcase>
 		</request>
 
-This method can be invoked e.g. for inmorting testcases fro a third party tool like testlink
+This method can be invoked e.g. for inmorting testcases from a third party tool like testlink
 
 #### Update testcase execution
 *Preconditions*  
@@ -36,7 +36,7 @@ This method can be invoked e.g. for inmorting testcases fro a third party tool l
   
 Following call will update testcase execution setting run time to "1", step1 result to "Passed", step2 result to "Not implemented"
 
-		http://username:password@tarantula_url/api/update_testcase_execution.xml  
+		curl -v -X POST -H 'Content-type: text/xml' -u user:password -d @update_testcase_execution.xml http://tarantula_url/api/update_testcase_execution.xml  
    
 where body is  
 
@@ -53,7 +53,7 @@ The other possible options for result are: "FAILED", "SKIPPED", "NOT\_RUN",
   
 This method can be invoked e.g. for integrating with a test automation tool
 
-#### Unblock testcase execution
+#### Block testcase execution
 *Preconditions*  
 - There is project "My project" in the system  
 - There is execution "My execution" in the system  
@@ -62,7 +62,7 @@ This method can be invoked e.g. for integrating with a test automation tool
   
 Following call will ublock testcase execution
 
-		http://username:password@tarantula_url/api/unblock_testcase_execution.xml  
+    curl -v -X POST -H 'Content-type: text/xml' -u user:password -d @block_testcase_execution.xml http://tarantula_url/api/block_testcase_execution.xml
    
 where body is  
 
@@ -74,7 +74,8 @@ where body is
   
 This method can be invoked e.g. for integrating with a test automation tool
 
-#### Block testcase execution
+
+#### Unblock testcase execution
 *Preconditions*  
 - There is project "My project" in the system  
 - There is execution "My execution" in the system  
@@ -83,7 +84,7 @@ This method can be invoked e.g. for integrating with a test automation tool
   
 Following call will ublock testcase execution
 
-		http://username:password@tarantula_url/api/block_testcase_execution.xml  
+    curl -v -X POST -H 'Content-type: text/xml' -u user:password -d @update_testcase_execution.xml http://tarantula_url/api/unblock_testcase_execution.xml
    
 where body is  
 
