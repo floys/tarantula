@@ -26,7 +26,7 @@ class ApiController < ApplicationController
 															:objective => attrs[:objective],
 															:test_data => attrs[:data],
 															:preconditions_and_assumptions => attrs[:preconditions],
-															:project_id => project,
+															:project_id => project.id,
 															:version=>1},
 															# steps
 															steps,
