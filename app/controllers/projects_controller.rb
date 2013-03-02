@@ -59,10 +59,10 @@ class ProjectsController < ApplicationController
     test_areas = @data.delete('test_areas')
     bug_products = @data.delete('bug_products')
     assigned_users = @data.delete('assigned_users')
+    sentences = @data.delete('sentences')
 
     @project = Project.create_with_assignments!(@data, assigned_users,
-                                                test_areas, bug_products)
-
+                                                test_areas, bug_products, sentences)
     render :json => @project.id, :status => :ok
   end
 
@@ -92,9 +92,10 @@ class ProjectsController < ApplicationController
     assigned_users = @data.delete('assigned_users')
     test_areas = @data.delete('test_areas')
     bug_products = @data.delete('bug_products')
+    sentences = @data.delete('sentences')
 
     @project.update_with_assignments!(@current_user, @data, assigned_users,
-                                      test_areas, bug_products)
+                                      test_areas, bug_products, sentences)
 
     render :json => @project.id, :status => :ok
   end
@@ -133,5 +134,4 @@ class ProjectsController < ApplicationController
   def current_id
     params[:id] = @project.id if params[:id] == 'current'
   end
-
 end

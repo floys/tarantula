@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121003140517) do
+ActiveRecord::Schema.define(:version => 20130302151107) do
 
   create_table "attachment_sets", :force => true do |t|
     t.datetime "created_at"
@@ -435,6 +435,15 @@ ActiveRecord::Schema.define(:version => 20121003140517) do
     t.integer "requirement_id"
     t.integer "test_area_id"
   end
+
+  create_table "sentences", :force => true do |t|
+    t.string   "value"
+    t.integer  "project_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  add_index "sentences", ["project_id"], :name => "index_sentences_on_project_id"
 
   create_table "step_executions", :force => true do |t|
     t.integer "step_id"

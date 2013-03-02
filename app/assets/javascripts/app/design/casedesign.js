@@ -241,6 +241,8 @@ Ext.extend(Ext.testia.CaseDesign, Ext.testia.MainContentDesign, {
             grow: true,
             validateOnBlur: false,
             validationEvent: 'keyup',
+            displayField: 'name',
+            store: new Ext.data.SimpleStore({fields : ['name'],data : [['Rename File'], ['Delete File'], ['Scan File']]}),
             validator: function() {
                 var val = this.getValue();
                 var a = [];

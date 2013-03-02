@@ -44,6 +44,8 @@ class Case < ActiveRecord::Base
 
   after_create :copy_attachments_from_original
 
+  CUCUMBER_KEYWORDS = JSON.parse(File.open(Rails.public_path + '/cucumber.json').read)
+
   def copy_attachments_from_original
     if self.original_id
       orig = Case.find(self.original_id)
@@ -355,6 +357,22 @@ class Case < ActiveRecord::Base
       ret[:tag_list] = self.tags_to_s
     end
     ret
+  end
+
+  def to_feature(lang) # this is for Cucumber integration
+    scenario = ''
+    scenario += "#{CUCUMBER_KEYWORDS[lang.to_sym][:feature]}: #{ self.title }\n"
+    scenario += "\t#{self.objective}\n\n"
+    scenario += "\t#{CUCUMBER_KEYWORDS[lang.to_sym][:background]}:\n"
+    scenario += "\t\t#{self.preconditions_and_assumptions}\n\n"
+    i = 0
+    self.steps.each{|step|
+      i+=1
+      scenario_title = (step.action =~ /^#{CUCUMBER_KEYWORDS[lang.to_sym][:scenario]}:(.+)$/)? $1.chomp : i.to_s
+      scenario += "#{CUCUMBER_KEYWORDS[lang.to_sym][:scenario]}: #{scenario_title}\n"
+      scenario += "#{self.action.chomp}\n"
+      scenario += "#{self.result.chomp}\n\n"
+    }
   end
 
   def copy_to(target_project, user, test_area_ids=nil)

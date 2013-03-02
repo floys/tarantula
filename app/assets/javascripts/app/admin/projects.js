@@ -208,8 +208,7 @@ Ext.extend(Ext.testia.BugtrackerDlg, Ext.LayoutDialog, {
 });
 
 /*
- * ====================================== TEST AUTOMATION DIALOG =======================================
-  
+ *  TEST AUTOMATION DIALOG
  */
 
 Ext.testia.AutomationToolDlg = function(config) {
@@ -222,7 +221,7 @@ Ext.testia.AutomationToolDlg = function(config) {
     config.autoCreate = true;
 
     //var el = Ext.DomHelper.append(document.body, {tag:'div'});
-    Ext.testia.BugtrackerDlg.superclass.constructor.call(this, Ext.id(),
+    Ext.testia.AutomationToolDlg.superclass.constructor.call(this, Ext.id(),
                                                          config);
 
     this.handler = config.fn.createDelegate(config.scope);
@@ -651,6 +650,7 @@ var Projects = function() {
         appForm.registerField('test_areas');
         appForm.registerField('bug_tracker_id');
         appForm.registerField('automation_tool_id');
+        appForm.registerField('sentences');
 
         appForm.registerField(productsGrid);
 
