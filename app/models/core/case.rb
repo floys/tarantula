@@ -1,3 +1,5 @@
+
+# encoding: UTF-8
 =begin rdoc
 
 A test case.
@@ -43,8 +45,6 @@ class Case < ActiveRecord::Base
   validates_uniqueness_of :external_id, :scope => :project_id, :allow_nil => true
 
   after_create :copy_attachments_from_original
-
-  CUCUMBER_KEYWORDS = JSON.parse(File.open(Rails.public_path + '/cucumber.json').read)
 
   def copy_attachments_from_original
     if self.original_id
@@ -360,19 +360,23 @@ class Case < ActiveRecord::Base
   end
 
   def to_feature(lang) # this is for Cucumber integration
+    keywords = ApplicationController.cucumber_keywords[lang]
+    raise "#{ApplicationController.cucumber_keywords.inspect} does not include #{lang} or invalid" if keywords.nil? or keywords["feature"].nil? or keywords["background"].nil? or keywords["scenario"].nil?
+    keywords.each{ |val, tran| keywords[val] = tran.split("|").first if tran =~ /|/ }
     scenario = ''
-    scenario += "#{CUCUMBER_KEYWORDS[lang.to_sym][:feature]}: #{ self.title }\n"
+    scenario += "#{keywords["feature"]}: #{ self.title }\n"
     scenario += "\t#{self.objective}\n\n"
-    scenario += "\t#{CUCUMBER_KEYWORDS[lang.to_sym][:background]}:\n"
+    scenario += "\t#{keywords["background"]}:\n"
     scenario += "\t\t#{self.preconditions_and_assumptions}\n\n"
     i = 0
     self.steps.each{|step|
       i+=1
-      scenario_title = (step.action =~ /^#{CUCUMBER_KEYWORDS[lang.to_sym][:scenario]}:(.+)$/)? $1.chomp : i.to_s
-      scenario += "#{CUCUMBER_KEYWORDS[lang.to_sym][:scenario]}: #{scenario_title}\n"
-      scenario += "#{self.action.chomp}\n"
-      scenario += "#{self.result.chomp}\n\n"
+      scenario_title = (step.action =~ /^#{keywords["scenario"]}:(.+)$/)? $1.chomp : i.to_s
+      scenario += "#{keywords["scenario"]}: #{scenario_title}\n"
+      scenario += "#{step.action.chomp}\n"
+      scenario += "#{step.result.chomp}\n\n"
     }
+    scenario
   end
 
   def copy_to(target_project, user, test_area_ids=nil)

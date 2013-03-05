@@ -15,6 +15,9 @@ class ApplicationController < ActionController::Base
     render :json => exception.message, :status => :forbidden
   end
 
+  def self.cucumber_keywords
+    JSON.parse(File.open(Rails.public_path + '/cucumber.json').read)
+  end
   # Give more information in case of JSON parse error
   #rescue_from ActiveSupport::JSON::ParseError do |exception|
   #  render :json => exception.message +
