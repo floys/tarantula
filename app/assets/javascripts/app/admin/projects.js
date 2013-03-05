@@ -458,6 +458,12 @@ var Projects = function() {
                 triggerAction: 'all',
                 mode: 'local',
                 selectOnFocus:true
+            }),
+            new Ext.form.TextArea({
+                fieldLabel: 'Autocomplete sentences',
+                name: 'sentences',
+                width: 300,
+                height: 150
             })
         );
 

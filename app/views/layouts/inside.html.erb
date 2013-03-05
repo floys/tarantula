@@ -10,6 +10,7 @@
  *
  * config.relative_url_root is determined by Rails
  */
+
 function createUrl( url) {
     return '<%= controller.config.relative_url_root %>' + url;
 }
@@ -57,6 +58,7 @@ var LIST_LOAD_LIMIT = parseInt('<%= Testia::LOAD_LIMIT %>', 10);
 
     <link rel="SHORTCUT ICON" href="<%= asset_path 'favicon.ico' %>" />
     <script type="text/javascript">
+    jQuery.noConflict();    
     //<![CDATA[
 
 
@@ -377,7 +379,7 @@ Ext.namespace('Ext.testia');
  * @extends Ext.util.Observable
  * @constructor
  */
-Ext.testia.GUI = function() {
+Ext.testia.GUI = function() {    
     // Initialize cookie provider
     this.chartCookies = new Ext.state.CookieProvider({
         //path: '/',
@@ -1563,13 +1565,17 @@ var importCsv = function (){
   };
 }();
 
+// Adding live jquery handlers for autocompletion
+
+
       //]]>
       </script>
     </head>
 
 
-  <body>
+  <body>    
     <div id="header">
+        <div id="autocomplete" style="top:50px;left:50%;margin-left:-150px;position:absolute;"></div>
         <div id="top-stripe"></div>
         <div id="header-actions">
                 <div id="tarantula-text-logo"></div>
@@ -1625,7 +1631,7 @@ var importCsv = function (){
                 onmouseover="newLayout.menuSelected('admin');"
                 onclick="newLayout.subMenuSelected('admin','adminusers')">
                         <div>Admin</div>
-                </div>
+                </div>                
                 <div id="notification-area">
                   <div id="load-indicator" style="float:left;margin-top:18px;margin-left:10px;">
                     <img src="<%= asset_path 'loading.gif' %>" alt="Loading..." />
@@ -1765,7 +1771,25 @@ var importCsv = function (){
         to display element also in IE
     -->
     <div id="exec_steps_tb"></div>
+    <script type="text/javascript">
+        var autocompleteOptions = {
+                lookup: <%= @project.sentences.collect(&:value).to_json.html_safe %>,
+                multiple: true,
+                delimiter: /\n/,                
+                appendTo: "#autocomplete",
+                width: 300
+            };
 
+        
+        jQuery(document).on("click", jQuery("textarea[name=preconditions_and_assumptions]"), function() {
+            jQuery(jQuery("textarea[name=preconditions_and_assumptions]")).autocomplete(autocompleteOptions);
+        });
+        jQuery(document).on('keydown',jQuery(".x-shadow").next().find('textarea'),function(){            
+            jQuery(jQuery(".x-shadow").next().find('textarea')).autocomplete(autocompleteOptions);
+        });
+        
+        
+    </script>
 
   </body>
 </html>
