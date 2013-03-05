@@ -75,4 +75,4 @@
 //= require app/tools/ImportForm
 //= require app/tools/doorsimport
 //= require ext/adapter/jquery/jquery
-//= require ext/adapter/jquery/jquery.autocomplete
+//= require ext/adapter/jquery/jquery.ui

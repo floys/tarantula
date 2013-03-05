@@ -1771,25 +1771,58 @@ var importCsv = function (){
         to display element also in IE
     -->
     <div id="exec_steps_tb"></div>
-    <script type="text/javascript">
-        var autocompleteOptions = {
-                lookup: <%= @project.sentences.collect(&:value).to_json.html_safe %>,
-                multiple: true,
-                delimiter: /\n/,                
-                appendTo: "#autocomplete",
-                width: 300
-            };
 
-        
+    <!-- Autocompletion functionality -->
+    <style>
+        .ui-autocomplete {
+            max-height: 100px;
+            overflow-y: auto;
+            /* prevent horizontal scrollbar */
+            overflow-x: hidden;
+        }
+        /* IE 6 doesn't support max-height
+        * we use height instead, but this forces the menu to always be this tall
+        */
+        * html .ui-autocomplete {
+            height: 100px;
+        }
+    </style>
+    <script type="text/javascript">        
+    jQuery(function() {
+        var availableTags = <%= @project.sentences.collect(&:value).to_json.html_safe %>;
+        function split( val ) {
+          return val.split( /\n/ );
+        }
+        function extractLast( term ) {
+          return split( term ).pop();
+        }
+        function complete(jElement){
+            jElement.bind( "keydown", function( event ) {
+            if ( event.keyCode === jQuery.ui.keyCode.TAB && jQuery( this ).data( "ui-autocomplete" ).menu.active ) {
+              event.preventDefault();
+            }}).autocomplete({
+            minLength: 0,
+            source: function( request, response ) { response( jQuery.ui.autocomplete.filter( availableTags, extractLast( request.term ) ) ); },
+            focus: function() { return false; },
+            select: function( event, ui ) { 
+                var terms = split( this.value ); 
+                terms.pop(); 
+                terms.push( ui.item.value );
+                terms.push( "" );
+                this.value = terms.join( "\n" );
+                return false;
+            }
+          });
+        }
+
         jQuery(document).on("click", jQuery("textarea[name=preconditions_and_assumptions]"), function() {
-            jQuery(jQuery("textarea[name=preconditions_and_assumptions]")).autocomplete(autocompleteOptions);
+            complete(jQuery("textarea[name=preconditions_and_assumptions]"));
         });
         jQuery(document).on('keydown',jQuery(".x-shadow").next().find('textarea'),function(){            
-            jQuery(jQuery(".x-shadow").next().find('textarea')).autocomplete(autocompleteOptions);
+            complete(jQuery(".x-shadow").next().find('textarea'));
         });
-        
-        
-    </script>
+ });
 
+    </script>
   </body>
 </html>
