@@ -72,31 +72,33 @@ skip_filter :set_current_user_and_project
 
 	def unblock_testcase_execution
 		attrs = params["request"]
-    	raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if attrs.nil?
+    raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if attrs.nil?
 		testcase_execution = block_unblock(false, attrs)
 		render :xml => { :result => "execution #{attrs["execution"]} unblocked" }
 	end
 
-	def get_testcase
-		supported_formats = ['xml', 'cucumber']
-		result = ''
+	def get_scenarios
 		attrs = params["request"]
-    	raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if attrs.nil?
-    	project = Project.find_by_name(attrs["project"])
+    raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if attrs.nil?
+    project = Project.find_by_name(attrs["project"])
 		raise ApiError.new("Project not found", attrs["project"]) if project.nil?
-		format = attrs["format"] || 'xml'
-		raise ApiError.new("Supported output formats: \"xml\", \"cucumber\"", format) if not supported_formats.include?(format)
 		lang = attrs['language']
-		raise ApiError.new("Supported languages: #{ApplicationController.cucumber_keywords.keys}", lang) if format == 'cucumber' and not ApplicationController.cucumber_keywords.keys.include?(lang)
-		tc = project.cases.find_by_title(attrs["title"])
-		raise ApiError.new("Testcase not found", attrs["testcase"]) if tc.nil?
-		case format		
-		when 'cucumber'
-			result = tc.to_feature(lang).to_s
-		else
-			result = tc.to_data(:brief).to_xml
-		end
-		render :xml => { :result => result }
+		raise ApiError.new("Supported languages: #{ApplicationController.cucumber_keywords.keys}", lang.inspect) if lang.nil?
+    project_tests = project.cases
+    execution_tests = project_tests
+    testcase_tests = project_tests
+    if attrs['testcase'] != nil
+      test = Case.find_by_title(attrs['testcase'])
+      raise ApiError.new("Testcase not found", attrs['testcase']) if test.nil?
+      testcase_tests = [test]
+    end
+    if attrs['execution'] != nil
+      execution = Execution.find_by_name(attrs['execution'])
+      raise ApiError.new("Execution not found", attrs['execution']) if execution.nil?
+      execution_tests = Case.find(execution.case_executions.collect(&:case_id))
+    end
+    tests = (project_tests & execution_tests) & testcase_tests
+		render :xml => tests.collect{|t| t.to_feature(lang)}.to_xml(:skip_types => true, :root => "test")
 	end
 
 				

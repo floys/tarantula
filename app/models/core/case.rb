@@ -365,14 +365,14 @@ class Case < ActiveRecord::Base
     keywords.each{ |val, tran| keywords[val] = tran.split("|").first if tran =~ /|/ }
     scenario = ''
     scenario += "#{keywords["feature"]}: #{ self.title }\n"
-    scenario += "\t#{self.objective}\n\n"
-    scenario += "\t#{keywords["background"]}:\n"
-    scenario += "\t\t#{self.preconditions_and_assumptions}\n\n"
+    scenario += "#{self.objective}\n"
+    scenario += "#{keywords["background"]}:\n"
+    scenario += "#{self.preconditions_and_assumptions}\n\n"
     i = 0
     self.steps.each{|step|
       i+=1
-      scenario_title = (step.action =~ /^#{keywords["scenario"]}:(.+)$/)? $1.chomp : i.to_s
-      scenario += "#{keywords["scenario"]}: #{scenario_title}\n"
+      scenario_title = keywords["scenario"]+': '+i.to_s
+      scenario += "#{scenario_title}\n" unless step.action =~ /^#{keywords["scenario"]}:(.+)$/
       scenario += "#{step.action.chomp}\n"
       scenario += "#{step.result.chomp}\n\n"
     }
