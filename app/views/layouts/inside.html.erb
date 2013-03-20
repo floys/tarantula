@@ -1788,8 +1788,23 @@ var importCsv = function (){
         }
     </style>
     <script type="text/javascript">        
+
+    var availableTags;
+    jQuery(document).ready(getTags());
+    function getTags(){	
+      jQuery.ajax({
+        url: '/automation/get_sentences',
+        type: 'GET',
+        dataType: 'json',            
+        success: function(data){
+    			jQuery.each(data,function(i,val){    				
+            availableTags = val;
+          });
+        }
+      })	
+    }
+
     jQuery(function() {
-        var availableTags = <%= @project.sentences.collect(&:value).to_json.html_safe %>;
         function split( val ) {
           return val.split( /\n/ );
         }
@@ -1801,7 +1816,7 @@ var importCsv = function (){
             if ( event.keyCode === jQuery.ui.keyCode.TAB && jQuery( this ).data( "ui-autocomplete" ).menu.active ) {
               event.preventDefault();
             }}).autocomplete({
-            minLength: 0,
+            minLength: 3,
             source: function( request, response ) { response( jQuery.ui.autocomplete.filter( availableTags, extractLast( request.term ) ) ); },
             focus: function() { return false; },
             select: function( event, ui ) { 

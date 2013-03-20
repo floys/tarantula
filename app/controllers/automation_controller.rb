@@ -21,4 +21,8 @@ class AutomationController < ApplicationController
 		render :json => {:data => {:message => "#{at.name} started with command\n\'#{cmd}\'\n\nLog can be found here: #{domen}/#{File.basename(@log.path)}"}}
 		@log.close
 	end
+
+  def get_sentences
+    render :json => { :data => @project.sentences.collect(&:value) }
+  end
 end
