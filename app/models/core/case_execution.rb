@@ -51,7 +51,6 @@ class CaseExecution < ActiveRecord::Base
     transaction do
       se_data.each do |se|
         step_execution = self.step_executions.find(se['id'])
-
         step_execution.update_attributes!({
           :result => ResultType.send(se['result']),
           :bug => se['bug'],

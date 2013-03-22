@@ -8,7 +8,7 @@ skip_filter :set_current_user_and_project
 
 	# example: Case.create_with_steps!({:created_by=>3,:updated_by=>3,:title => "Импорт", :date=>"2012-09-22T00:00:00",:priority=>"high", :time_estimate=>"", :objective=>"Цель",:test_data=>"Данные",:preconditions_and_assumptions=>"some prec",:test_area_ids=>[],:change_comment=>"Comment",:project_id=>1,:version=>1},[:version=>1,:position=>1,:action=>"step1",:result=>"res1"])
 	def create_testcase
-    	raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if params["request"].nil? or params["request"]["testcase"].nil?    	
+    raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if params["request"].nil? or params["request"]["testcase"].nil?    	
 		attrs = params["request"]["testcase"]
 		steps = attrs["step"] 
 		raise ApiError.new("Provided steps set is empty", params.inspect) if steps.nil?
@@ -41,7 +41,7 @@ skip_filter :set_current_user_and_project
 
 	def update_testcase_execution
 		attrs = params["request"]
-    	raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if attrs.nil?
+    raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if attrs.nil?
 		project = Project.find_by_name(attrs["project"])
 		raise ApiError.new("Project not found", attrs["project"]) if project.nil?
 		# following assumptions are made:
@@ -84,7 +84,7 @@ skip_filter :set_current_user_and_project
 		raise ApiError.new("Project not found", attrs["project"]) if project.nil?
 		lang = attrs['language']
 		raise ApiError.new("Supported languages: #{ApplicationController.cucumber_keywords.keys}", lang.inspect) if lang.nil?
-    project_tests = project.cases
+    project_tests = project.cases.select{ |c| c.deleted == false }
     execution_tests = project_tests
     testcase_tests = project_tests
     if attrs['testcase'] != nil
@@ -98,10 +98,31 @@ skip_filter :set_current_user_and_project
       execution_tests = Case.find(execution.case_executions.collect(&:case_id))
     end
     tests = (project_tests & execution_tests) & testcase_tests
-		render :xml => tests.collect{|t| t.to_feature(lang)}.to_xml(:skip_types => true, :root => "test")
+    result = tests.collect{|t| { :title => t.title, :body => t.to_feature(lang) } }.to_xml(:skip_types => true, :root => "test")
+		render :xml => result
 	end
 
-				
+  def update_testcase_step
+		attrs = params["request"]
+    raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if attrs.nil?
+
+		project = Project.find_by_name(attrs["project"])
+		raise ApiError.new("Project not found", attrs["project"]) if project.nil?
+
+		testcase_execution = CaseExecution.find_by_execution_id_and_case_id(project.executions.where(:name => attrs["execution"]).first, project.cases.where(:title => attrs["testcase"]).first)
+		raise ApiError.new("CaseExecution not found", "Test => #{attrs["testcase"]}, Execution => #{attrs["execution"]}") if testcase_execution.nil?
+
+    step_executions = testcase_execution.step_executions.where(:position => attrs["position"].to_i)
+    raise ApiError.new("Case step with position #{attrs["position"].to_i} not found inside testcase #{attrs["testcase"]}", "Steps => #{testcase_execution.step_executions.collect(&:inspect)}") if step_executions.empty?
+    step_execution = step_executions.first
+
+    step_execution.update_attributes!({
+      :result => ResultType.send(attrs["result"]),
+      :comment => attrs['comment']
+    })
+		render :xml => { :result => "step number #{attrs["position"]} of #{attrs["testcase"]} updated" }.to_xml
+  end    
+
 
 	private
 	def login_once
