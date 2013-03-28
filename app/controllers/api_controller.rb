@@ -123,6 +123,20 @@ skip_filter :set_current_user_and_project
 		render :xml => { :result => "step number #{attrs["position"]} of #{attrs["testcase"]} updated" }.to_xml
   end    
 
+  def update_testcase_duration
+		attrs = params["request"]
+    raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if attrs.nil?
+
+		project = Project.find_by_name(attrs["project"])
+		raise ApiError.new("Project not found", attrs["project"]) if project.nil?
+
+		testcase_execution = CaseExecution.find_by_execution_id_and_case_id(project.executions.where(:name => attrs["execution"]).first, project.cases.where(:title => attrs["testcase"]).first)
+		raise ApiError.new("CaseExecution not found", "Test => #{attrs["testcase"]}, Execution => #{attrs["execution"]}") if testcase_execution.nil?
+
+    testcase_execution.update_attribute(:duration, attrs[:duration])
+		render :xml => { :result => "testcase duration #{attrs["testcase"]} updated to #{attrs[:duration]}" }.to_xml
+  end    
+
 
 	private
 	def login_once
