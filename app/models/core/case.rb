@@ -367,14 +367,14 @@ class Case < ActiveRecord::Base
     scenario += "#{keywords["feature"]}: #{ self.title }\n"
     scenario += "#{self.objective}\n"
     scenario += "#{keywords["background"]}:\n"
-    scenario += "#{self.preconditions_and_assumptions}\n\n"
+    scenario += "#{self.preconditions_and_assumptions.split("\n").collect{ |s| '* ' + s }.join("\n").chomp}\n\n"
     i = 0
     self.steps.each{|step|
       i+=1
       scenario_title = keywords["scenario"]+': '+i.to_s
       scenario += "#{scenario_title}\n" unless step.action =~ /^#{keywords["scenario"]}:(.+)$/
-      scenario += "#{step.action.chomp}\n"
-      scenario += "#{step.result.chomp}\n\n"
+      scenario += "#{step.action.split("\n").collect{ |s| '* ' + s }.join("\n").chomp}\n"
+      scenario += "#{step.result.split("\n").collect{ |s| '* ' + s }.join("\n").chomp}\n\n"
     }
     scenario.gsub("[",'"<').gsub("]",'>"')
   end
