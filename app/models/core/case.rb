@@ -376,7 +376,7 @@ class Case < ActiveRecord::Base
       scenario += "#{step.action.chomp}\n"
       scenario += "#{step.result.chomp}\n\n"
     }
-    scenario
+    scenario.gsub("[",'"<').gsub("]",'>"')
   end
 
   def copy_to(target_project, user, test_area_ids=nil)

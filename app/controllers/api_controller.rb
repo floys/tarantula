@@ -84,21 +84,21 @@ skip_filter :set_current_user_and_project
 		raise ApiError.new("Project not found", attrs["project"]) if project.nil?
 		lang = attrs['language']
 		raise ApiError.new("Supported languages: #{ApplicationController.cucumber_keywords.keys}", lang.inspect) if lang.nil?
-    project_tests = project.cases.select{ |c| c.deleted == false }
+    project_tests = project.cases.select{ |c| c.deleted == false }.collect(&:id)
     execution_tests = project_tests
     testcase_tests = project_tests
     if attrs['testcase'] != nil
       test = Case.find_by_title(attrs['testcase'])
       raise ApiError.new("Testcase not found", attrs['testcase']) if test.nil?
-      testcase_tests = [test]
+      testcase_tests = [test.id]
     end
     if attrs['execution'] != nil
       execution = Execution.find_by_name(attrs['execution'])
       raise ApiError.new("Execution not found", attrs['execution']) if execution.nil?
-      execution_tests = Case.find(execution.case_executions.collect(&:case_id))
+      execution_tests = execution.case_executions.collect(&:case_id)
     end
     tests = (project_tests & execution_tests) & testcase_tests
-    result = tests.collect{|t| { :title => t.title, :body => t.to_feature(lang) } }.to_xml(:skip_types => true, :root => "test")
+    result = Case.find(tests).collect{|t| { :title => t.title, :body => t.to_feature(lang) } }.to_xml(:skip_types => true, :root => "test")
 		render :xml => result
 	end
 
