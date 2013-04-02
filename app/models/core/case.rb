@@ -367,16 +367,19 @@ class Case < ActiveRecord::Base
     scenario += "#{keywords["feature"]}: #{ self.title }\n"
     scenario += "#{self.objective}\n"
     scenario += "#{keywords["background"]}:\n"
-    scenario += "#{self.preconditions_and_assumptions.split("\n").collect{ |s| '* ' + s }.join("\n").chomp}\n\n"
+    scenario += self.preconditions_and_assumptions.split("\n").collect{ |s| prefix_sentence(s) }.join("\n").chomp + "\n\n"
     i = 0
     self.steps.each{|step|
       i+=1
-      scenario_title = keywords["scenario"]+': '+i.to_s
-      scenario += "#{scenario_title}\n" unless step.action =~ /^#{keywords["scenario"]}:(.+)$/
-      scenario += "#{step.action.split("\n").collect{ |s| '* ' + s }.join("\n").chomp}\n"
-      scenario += "#{step.result.split("\n").collect{ |s| '* ' + s }.join("\n").chomp}\n\n"
+      scenario_title = keywords["scenario"]+': ' + i.to_s
+      scenario += "#{scenario_title}\n" if not (step.action =~ /^#{keywords["scenario"]}:(.+)$/ or step.action =~ /^#{keywords["scenario_outline"]}:(.+)$/)
+      step.action.split("\n").each{ |s|
+        
+      }
+      scenario += "#{step.action.split("\n").collect{ |s| prefix_sentence(s) }.join("\n").chomp}\n"
+      scenario += "#{step.result.split("\n").collect{ |s| prefix_sentence(s) }.join("\n").chomp}\n\n"
     }
-    scenario.gsub("[",'"<').gsub("]",'>"')
+    scenario
   end
 
   def copy_to(target_project, user, test_area_ids=nil)
@@ -560,5 +563,14 @@ class Case < ActiveRecord::Base
     attribute   :preconditions_and_assumptions, 'Preconditions & Assumptions'
     children    :steps
   end
-  
+  private
+
+  def prefix_sentence(s)
+    s = s.gsub("[",'"<').gsub("]",'>"')
+    out = s
+    if self.project.sentences.collect(&:value).include? s.gsub(/"[^"]+"/,'""')
+      out = "* #{s}"
+    end
+    out
+  end
 end

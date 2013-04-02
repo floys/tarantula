@@ -97,9 +97,6 @@ skip_filter :set_current_user_and_project
       raise ApiError.new("Execution not found", attrs['execution']) if execution.nil?
       execution_tests = execution.case_executions.collect(&:case_id)
     end
-    puts "!!!!!!!!!!!!!"
-    puts project_tests
-    puts testcase_tests
     tests = (project_tests & execution_tests) & testcase_tests
     result = Case.find(tests).collect{|t| { :title => t.title, :body => t.to_feature(lang) } }.to_xml(:skip_types => true, :root => "test")
 		render :xml => result
