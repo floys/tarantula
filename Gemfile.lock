@@ -5,6 +5,14 @@ GIT
     linecache19 (0.5.12)
       ruby_core_source (>= 0.1.4)
 
+GIT
+  remote: git@github.com:sandrods/odf-report.git
+  revision: 43c7f02dae03d082e13cc1de3446244feddbf03d
+  specs:
+    odf-report (0.4.4)
+      nokogiri (~> 1.5.0)
+      rubyzip (~> 0.9.4)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -107,6 +115,7 @@ GEM
     net-ssh (2.3.0)
     net-ssh-gateway (1.1.0)
       net-ssh (>= 1.99.1)
+    nokogiri (1.5.9)
     passenger (3.0.17)
       daemon_controller (>= 1.0.0)
       fastthread (>= 1.0.1)
@@ -212,6 +221,7 @@ DEPENDENCIES
   linecache19!
   memcache-client
   mysql2
+  odf-report!
   passenger
   prawn (~> 0.5.0.1)
   prawn-core (~> 0.5.0.1)

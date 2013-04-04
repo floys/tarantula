@@ -110,10 +110,10 @@ skip_filter :set_current_user_and_project
 		raise ApiError.new("Project not found", attrs["project"]) if project.nil?
 
 		testcase_execution = CaseExecution.find_by_execution_id_and_case_id(project.executions.where(:name => attrs["execution"]).first, project.cases.where(:title => attrs["testcase"]).first)
-		raise ApiError.new("CaseExecution not found", "Test => #{attrs["testcase"]}, Execution => #{attrs["execution"]}") if testcase_execution.nil?
+		raise ApiError.new("CaseExecution not found", "testcase => #{attrs["testcase"]}, execution => #{attrs["execution"]}") if testcase_execution.nil?
 
     step_executions = testcase_execution.step_executions.where(:position => attrs["position"].to_i)
-    raise ApiError.new("Case step with position #{attrs["position"].to_i} not found inside testcase #{attrs["testcase"]}", "Steps => #{testcase_execution.step_executions.collect(&:inspect)}") if step_executions.empty?
+    raise ApiError.new("Step with position #{attrs["position"].to_i} not found inside testcase #{attrs["testcase"]}", "Steps => #{testcase_execution.step_executions.collect(&:inspect)}") if step_executions.empty?
     step_execution = step_executions.first
 
     step_execution.update_attributes!({
@@ -133,7 +133,7 @@ skip_filter :set_current_user_and_project
 		testcase_execution = CaseExecution.find_by_execution_id_and_case_id(project.executions.where(:name => attrs["execution"]).first, project.cases.where(:title => attrs["testcase"]).first)
 		raise ApiError.new("CaseExecution not found", "Test => #{attrs["testcase"]}, Execution => #{attrs["execution"]}") if testcase_execution.nil?
 
-    testcase_execution.update_attribute(:duration, attrs[:duration])
+    testcase_execution.update_attributes(:duration => attrs[:duration], :executed_at => Time.now, :executor => @current_user)
 		render :xml => { :result => "testcase duration #{attrs["testcase"]} updated to #{attrs[:duration]}" }.to_xml
   end    
 

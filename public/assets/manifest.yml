@@ -1340,7 +1340,7 @@ vista/tabs/tab-btm-right-bg.gif: vista/tabs/tab-btm-right-bg-8f1f8f93aced6afec9a
 vista/tabs/tab-sprite.gif: vista/tabs/tab-sprite-c6075a476d059bcf6a52a369e5cc3855.gif
 vista/toolbar/gray-bg.gif: vista/toolbar/gray-bg-fa883a1969da669871507e0ce98fe6a1.gif
 vista/toolbar/tb-btn-sprite.gif: vista/toolbar/tb-btn-sprite-7f6bb485d6b6e0a578b3987b36005c47.gif
-application.js: application-df713f3e4309d776599ff290412d7a15.js
+application.js: application-1206336d22e6938a7a3ad120c432b2a2.js
 ext/INCLUDE_ORDER.txt: ext/INCLUDE_ORDER-c015f22118ea32f9b0bfc67a8240b1bd.txt
 ext/adapter/jquery/images/animated-overlay.gif: ext/adapter/jquery/images/animated-overlay-691b2d4343303de8d214ad5395fd895d.gif
 ext/adapter/jquery/images/ui-bg_diagonals-thick_18_b81900_40x40.png: ext/adapter/jquery/images/ui-bg_diagonals-thick_18_b81900_40x40-eb516818fce59098782faf28d1b75002.png

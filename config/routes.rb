@@ -163,4 +163,5 @@ Tarantula::Application.routes do
 	match '/automation/execute', :controller => 'automation', :action => 'execute', :via => :get
 	match '/automation/get_sentences', :controller => 'automation', :action => 'get_sentences', :via => :get
 	match "/case_executions/automated/:id", :controller => 'case_executions', :action => 'automated', :via => :get
+	match "/export/items", :controller => 'export', :action => 'export_items', :via => :get
 end

@@ -455,12 +455,10 @@ class Case < ActiveRecord::Base
         self.steps << step
       end
       self.tag_with((tag_list || ''))
-
-      if ce
-        ce = self.case_executions.find(ce)
+      self.case_executions.each{ |ce| 
         ce.update_case_version(self.version, User.find(atts[:updated_by]))
         ce.update_attributes!({:title => self.title})
-      end
+      }
     end
   end
 
