@@ -26,28 +26,30 @@ class ExportController < ApplicationController
 
   def export_cases cases
     @report = ODFReport::Report.new("#{Rails.public_path}/export.odt") do |r|
-      cases.each{ |c|
-        r.add_field :test_title, c.title
-        r.add_field :test_objective, c.objective
-        r.add_field :test_preconditions, c.preconditions_and_assumptions
-        r.add_field :test_data, c.test_data
-        r.add_table("STEPS", c.steps, :header => true) do |t|
-          t.add_column :step_action, :action
-          t.add_column :step_result, :result
-        end
-      }
-
-      #r.add_section("CASES", cases) do |s|
-      #  s.add_field(:test_title){|item| item.title}
-      #  s.add_field :test_objective, :objective
-      #  s.add_field :test_preconditions, :preconditions_and_assumptions
-      #  s.add_field :test_data, :test_data
-
-      #  s.add_table("STEPS", :steps, :header => true) do |t|
+      #cases.each{ |c|
+      #  r.add_field :test_title, c.title
+      #  r.add_field :test_objective, c.objective
+      #  r.add_field :test_preconditions, c.preconditions_and_assumptions
+      #  r.add_field :test_data, c.test_data
+      #  index = 0
+      #  r.add_table("STEPS", c.steps, :header => true) do |t|
+      #    t.add_column(:step_index){ |item| StepExecution.find_by_step_id(item.id).position.to_s }
       #    t.add_column :step_action, :action
       #    t.add_column :step_result, :result
       #  end
-      #end
+      #}
+
+      r.add_section("CASES", cases) do |s|
+        s.add_field(:test_title){|item| item.title}
+        s.add_field :test_objective, :objective
+        s.add_field :test_preconditions, :preconditions_and_assumptions
+        s.add_field :test_data, :test_data
+
+        s.add_table("STEPS", :steps, :header => true) do |t|
+          t.add_column :step_action, :action
+          t.add_column :step_result, :result
+        end
+      end
     end
   end
 end

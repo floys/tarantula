@@ -16,7 +16,7 @@ skip_filter :set_current_user_and_project
 			s["version"] = 1
 			s["position"] = steps.index(s)+1
 		}
-		project = Project.find_by_name(attrs["project"])		
+    project = Project.find_by_name(attrs["project"], :conditions => {:deleted => false})
 		raise ApiError.new("Project not found", attrs["project"]) if project.nil?
 		c = Case.create_with_steps!(
 			{ # test attrs
@@ -42,7 +42,7 @@ skip_filter :set_current_user_and_project
 	def update_testcase_execution
 		attrs = params["request"]
     raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if attrs.nil?
-		project = Project.find_by_name(attrs["project"])
+    project = Project.find_by_name(attrs["project"], :conditions => {:deleted => false})
 		raise ApiError.new("Project not found", attrs["project"]) if project.nil?
 		# following assumptions are made:
 		# validates_uniqueness_of :name, :scope => :project_id (execution.rb)
@@ -65,7 +65,7 @@ skip_filter :set_current_user_and_project
 	end
 	def block_testcase_execution
 		attrs = params["request"]
-    	raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if attrs.nil?
+    raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if attrs.nil?
 		testcase_execution = block_unblock(true,attrs)
 		render :xml => { :result => "execution #{attrs["execution"]} blocked" } 
 	end
@@ -80,7 +80,7 @@ skip_filter :set_current_user_and_project
 	def get_scenarios
 		attrs = params["request"]
     raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if attrs.nil?
-    project = Project.find_by_name(attrs["project"])
+    project = Project.find_by_name(attrs["project"], :conditions => {:deleted => false})
 		raise ApiError.new("Project not found", attrs["project"]) if project.nil?
 		lang = attrs['language']
 		raise ApiError.new("Supported languages: #{ApplicationController.cucumber_keywords.keys}", lang.inspect) if lang.nil?
@@ -88,12 +88,12 @@ skip_filter :set_current_user_and_project
     execution_tests = project_tests
     testcase_tests = project_tests
     if attrs['testcase'] != nil
-      test = Case.find_by_title(attrs['testcase'])
+      test = Case.find_by_title(attrs['testcase'], :conditions => { :deleted => false })
       raise ApiError.new("Testcase not found", attrs['testcase']) if test.nil?
       testcase_tests = [test.id]
     end
     if attrs['execution'] != nil
-      execution = Execution.find_by_name(attrs['execution'])
+      execution = Execution.find_by_name(attrs['execution'], :conditions => { :deleted => false })
       raise ApiError.new("Execution not found", attrs['execution']) if execution.nil?
       execution_tests = execution.case_executions.collect(&:case_id)
     end
@@ -106,7 +106,7 @@ skip_filter :set_current_user_and_project
 		attrs = params["request"]
     raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if attrs.nil?
 
-		project = Project.find_by_name(attrs["project"])
+    project = Project.find_by_name(attrs["project"], :conditions => {:deleted => false})
 		raise ApiError.new("Project not found", attrs["project"]) if project.nil?
 
 		testcase_execution = CaseExecution.find_by_execution_id_and_case_id(project.executions.where(:name => attrs["execution"]).first, project.cases.where(:title => attrs["testcase"]).first)
@@ -127,7 +127,7 @@ skip_filter :set_current_user_and_project
 		attrs = params["request"]
     raise ApiError.new("Could not parse request as XML. Make sure to specify \'Content-type: text/xml\' when sending request", params.inspect) if attrs.nil?
 
-		project = Project.find_by_name(attrs["project"])
+    project = Project.find_by_name(attrs["project"], :conditions => {:deleted => false})
 		raise ApiError.new("Project not found", attrs["project"]) if project.nil?
 
 		testcase_execution = CaseExecution.find_by_execution_id_and_case_id(project.executions.where(:name => attrs["execution"]).first, project.cases.where(:title => attrs["testcase"]).first)
@@ -149,7 +149,7 @@ skip_filter :set_current_user_and_project
 
 
 	def block_unblock(flag,attrs)
-		project = Project.find_by_name(attrs["project"])
+    project = Project.find_by_name(attrs["project"], :conditions => {:deleted => false})
 		raise ApiError.new("Project not found", attrs["project"]) if project.nil?
 		# following assumptions are made:
 		# validates_uniqueness_of :name, :scope => :project_id (execution.rb)

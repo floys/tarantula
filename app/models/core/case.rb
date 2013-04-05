@@ -43,6 +43,7 @@ class Case < ActiveRecord::Base
 
   validates_presence_of :title, :project_id, :date
   validates_uniqueness_of :external_id, :scope => :project_id, :allow_nil => true
+  validate :sentence
 
   after_create :copy_attachments_from_original
 
@@ -360,14 +361,14 @@ class Case < ActiveRecord::Base
   end
 
   def to_feature(lang) # this is for Cucumber integration
-    keywords = ApplicationController.cucumber_keywords[lang]
-    raise "#{ApplicationController.cucumber_keywords.inspect} does not include #{lang} or invalid" if keywords.nil? or keywords["feature"].nil? or keywords["background"].nil? or keywords["scenario"].nil?
-    keywords.each{ |val, tran| keywords[val] = tran.split("|").first if tran =~ /|/ }
+    Sentence.lang = lang
+    keywords = Sentence.keywords
+    raise "Cucumber does not support #{lang}" if keywords.nil? or keywords["feature"].nil? or keywords["background"].nil? or keywords["scenario"].nil?
     scenario = ''
     scenario += "#{keywords["feature"]}: #{ self.title }\n"
     scenario += "#{self.objective}\n"
     scenario += "#{keywords["background"]}:\n"
-    scenario += self.preconditions_and_assumptions.split("\n").collect{ |s| prefix_sentence(s) }.join("\n").chomp + "\n\n"
+    scenario += self.preconditions_and_assumptions.split("\n").collect{ |s| Sentence.prepare(s) }.join("\n").chomp + "\n\n"
     i = 0
     self.steps.each{|step|
       i+=1
@@ -376,8 +377,8 @@ class Case < ActiveRecord::Base
       step.action.split("\n").each{ |s|
         
       }
-      scenario += "#{step.action.split("\n").collect{ |s| prefix_sentence(s) }.join("\n").chomp}\n"
-      scenario += "#{step.result.split("\n").collect{ |s| prefix_sentence(s) }.join("\n").chomp}\n\n"
+      scenario += "#{step.action.split("\n").collect{ |s| Sentence.prepare(s) }.join("\n").chomp}\n"
+      scenario += "#{step.result.split("\n").collect{ |s| Sentence.prepare(s) }.join("\n").chomp}\n\n"
     }
     scenario
   end
@@ -563,12 +564,30 @@ class Case < ActiveRecord::Base
   end
   private
 
-  def prefix_sentence(s)
-    s = s.gsub("[",'"<').gsub("]",'>"')
-    out = s
-    if self.project.sentences.collect(&:value).include? s.gsub(/"[^"]+"/,'""')
-      out = "* #{s}"
+  def sentence  
+    sents = self.project.sentences.collect(&:value)
+    unless self.project.sentences.empty?
+      self.preconditions_and_assumptions.split("\n").each{|s|
+        unless sents.include? Sentence.strip(s)
+          errors.add(:sentence, "\"#{Sentence.strip(s)}\" - Unknown")
+          return false
+        end
+      }
+      self.steps.each{|step|
+        step.action.split("\n").each{|s|
+          unless sents.include? Sentence.strip(s)
+            errors.add(:sentence, "\"#{Sentence.strip(s)}\" - Unknown")
+            return false
+          end
+        }
+        step.result.split("\n").each{|s|
+          unless sents.include? Sentence.strip(s)
+            errors.add(:sentence, "\"#{Sentence.strip(s)}\" - Unknown")
+            return false
+          end
+        }
+      }
     end
-    out
+    true
   end
 end

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 # Filters added to this controller apply to all controllers in the application.
 # Likewise, all the methods added will be available for all controllers.
 
@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
 
   rescue_from StandardError do |exception|
     logger.debug exception.message+"\n"+(exception.backtrace.join("\n"))
-    render :json => exception.message, :status => :forbidden
+    render :text => exception.message, :status => :forbidden, :content_type => "charset=UTF-8"
   end
 
   def self.cucumber_keywords
