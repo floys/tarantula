@@ -19,7 +19,7 @@ class Sentence < ActiveRecord::Base
     if str =~ /^([^:]+:).+$/
       return $1
     end
-    str.gsub(/"[^"]+"/,'""').chomp
+    str.gsub(/"[^"]*"/,'""').chomp
   end
 
   def self.keywords 
