@@ -96,7 +96,6 @@ class UsersController < ApplicationController
     @user = User.new(@data)
 
     @user.new_random_password if @user.password.blank?
-
     @user.save!
     render :json => @user.id, :status => :created
   end

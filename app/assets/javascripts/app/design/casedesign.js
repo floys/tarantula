@@ -1,6 +1,5 @@
 Ext.namespace('Ext.testia');
 
-
 Ext.testia.CaseDesign = function(gui,formEl,toolbarEl,dialog) {
     Ext.testia.CaseDesign.superclass.constructor.call(this,gui, formEl, toolbarEl, dialog);
 
@@ -151,7 +150,7 @@ Ext.extend(Ext.testia.CaseDesign, Ext.testia.MainContentDesign, {
 
             new Ext.tarantula.TextArea({
                 fieldLabel: 'Preconditions & assumptions',
-                name: 'preconditions_and_assumptions'
+                name: 'preconditions_and_assumptions',
             }),
 
             new Ext.form.TextField({
@@ -218,7 +217,7 @@ Ext.extend(Ext.testia.CaseDesign, Ext.testia.MainContentDesign, {
                         form.defaultButtonSave();
                     }
                 });
-        };
+        };       
 
         tmpEl = Ext.DomHelper.append(this.appForm.el.dom.parentNode,
                                      {tag:'div', cls:'attachments'}, true);
@@ -241,6 +240,8 @@ Ext.extend(Ext.testia.CaseDesign, Ext.testia.MainContentDesign, {
             grow: true,
             validateOnBlur: false,
             validationEvent: 'keyup',
+            displayField: 'name',
+            store: new Ext.data.SimpleStore({fields : ['name'],data : [['Rename File'], ['Delete File'], ['Scan File']]}),
             validator: function() {
                 var val = this.getValue();
                 var a = [];

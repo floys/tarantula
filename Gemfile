@@ -17,7 +17,24 @@ gem 'delayed_job_active_record'
 gem 'daemons'
 gem 'memcache-client'
 gem 'rubyzip', :require => 'zip/zip'
-
+gem 'passenger'
+gem 'odf-report', :git => 'git@github.com:sandrods/odf-report.git'
+# Gems needed only for integration with oracle hosted jira
+group :oracle_enabled do
+  gem 'activerecord-oracle_enhanced-adapter', '~> 1.4.0'
+  gem 'ruby-oci8', '>= 2.0.4'
+end
+# Only development gems
+group :development do
+  gem 'capistrano'
+  gem 'rvm-capistrano'
+  gem 'git-up'
+  gem 'debugger'
+  gem 'linecache19', :git => 'git://github.com/mark-moseley/linecache'
+  gem 'ruby-debug-base19x', '~> 0.11.30.pre4'
+  gem 'ruby-debug19'
+  gem 'rack-debug'
+end
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 # Filters added to this controller apply to all controllers in the application.
 # Likewise, all the methods added will be available for all controllers.
 
@@ -6,15 +6,18 @@
 
 class ApplicationController < ActionController::Base
   # protect_from_forgery
-  before_filter :set_current_user_and_project, :except => [:login]
+	before_filter :set_current_user_and_project, :except => [:login]
   before_filter :apply_currents
   before_filter :clean_data
 
   rescue_from StandardError do |exception|
     logger.debug exception.message+"\n"+(exception.backtrace.join("\n"))
-    render :json => exception.message, :status => :forbidden
+    render :text => exception.message, :status => :forbidden, :content_type => "charset=UTF-8"
   end
 
+  def self.cucumber_keywords
+    JSON.parse(File.open(Rails.public_path + '/cucumber.json').read)
+  end
   # Give more information in case of JSON parse error
   #rescue_from ActiveSupport::JSON::ParseError do |exception|
   #  render :json => exception.message +
@@ -169,5 +172,21 @@ class ApplicationController < ActionController::Base
     @current_user = User.find(request.env['REMOTE_USER'] || session[:user_id])
     @project = @current_user.latest_project
   end
-
+protected
+	def can_do_stuff?(login,password)		
+		if u = User.authenticate(login,password)
+			if !u.latest_project
+				flash.now[:notice] = "You have no project assignments."
+				return false
+			elsif u.deleted?
+				flash.now[:notice] = "You have been deleted."
+				return false
+			else
+				session[:user_id] = u.id
+				return true
+			end
+		end
+		flash.now[:notice] = "Login failed."
+		return false
+	end
 end

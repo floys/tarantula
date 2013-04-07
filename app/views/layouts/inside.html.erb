@@ -1,7 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
-
 <script type="text/javascript">
 /**
  * Global function for generating urls on clientside, so
@@ -10,6 +9,7 @@
  *
  * config.relative_url_root is determined by Rails
  */
+
 function createUrl( url) {
     return '<%= controller.config.relative_url_root %>' + url;
 }
@@ -57,6 +57,7 @@ var LIST_LOAD_LIMIT = parseInt('<%= Testia::LOAD_LIMIT %>', 10);
 
     <link rel="SHORTCUT ICON" href="<%= asset_path 'favicon.ico' %>" />
     <script type="text/javascript">
+    jQuery.noConflict();    
     //<![CDATA[
 
 
@@ -377,7 +378,7 @@ Ext.namespace('Ext.testia');
  * @extends Ext.util.Observable
  * @constructor
  */
-Ext.testia.GUI = function() {
+Ext.testia.GUI = function() {    
     // Initialize cookie provider
     this.chartCookies = new Ext.state.CookieProvider({
         //path: '/',
@@ -1295,6 +1296,10 @@ Ext.extend(Ext.testia.GUI, Ext.util.Observable, {
             Projects.editBugtrackers();
             break;
 
+        case 'adminautomationtools':
+            Projects.editAutomationTools();
+            break;
+
         case 'importdoors':
             // Just remove toolbar, if any.
             // This might needs more robust handling...
@@ -1559,13 +1564,17 @@ var importCsv = function (){
   };
 }();
 
+// Adding live jquery handlers for autocompletion
+
+
       //]]>
       </script>
     </head>
 
 
-  <body>
+  <body>    
     <div id="header">
+        <div id="autocomplete" style="top:50px;left:50%;margin-left:-150px;position:absolute;"></div>
         <div id="top-stripe"></div>
         <div id="header-actions">
                 <div id="tarantula-text-logo"></div>
@@ -1621,7 +1630,7 @@ var importCsv = function (){
                 onmouseover="newLayout.menuSelected('admin');"
                 onclick="newLayout.subMenuSelected('admin','adminusers')">
                         <div>Admin</div>
-                </div>
+                </div>                
                 <div id="notification-area">
                   <div id="load-indicator" style="float:left;margin-top:18px;margin-left:10px;">
                     <img src="<%= asset_path 'loading.gif' %>" alt="Loading..." />
@@ -1710,6 +1719,9 @@ var importCsv = function (){
                     <span onclick="javascript:newLayout.subMenuSelected('admin','admindefects')">
                         Defect Trackers
                     </span>
+                    <span onclick="javascript:newLayout.subMenuSelected('admin','adminautomationtools')">
+                        Automation Tools
+                    </span>
                     <span onclick="javascript:newLayout.subMenuSelected('admin','adminbackup')">
                         Backup
                     </span>
@@ -1759,6 +1771,72 @@ var importCsv = function (){
     -->
     <div id="exec_steps_tb"></div>
 
+    <!-- Autocompletion functionality -->
+    <style>
+        .ui-autocomplete {
+            max-height: 100px;
+            overflow-y: auto;
+            /* prevent horizontal scrollbar */
+            overflow-x: hidden;
+        }
+        /* IE 6 doesn't support max-height
+        * we use height instead, but this forces the menu to always be this tall
+        */
+        * html .ui-autocomplete {
+            height: 100px;
+        }
+    </style>
+    <script type="text/javascript">        
 
+    var availableTags;
+    jQuery(document).ready(getTags());
+    function getTags(){	
+      jQuery.ajax({
+        url: '/automation/get_sentences',
+        type: 'GET',
+        dataType: 'json',            
+        success: function(data){
+    			jQuery.each(data,function(i,val){    				
+            availableTags = val;
+          });
+        }
+      })	
+    }
+
+    jQuery(function() {
+        function split( val ) {
+          return val.split( /\n/ );
+        }
+        function extractLast( term ) {
+          return split( term ).pop();
+        }
+        function complete(jElement){
+            jElement.bind( "keydown", function( event ) {
+            if ( event.keyCode === jQuery.ui.keyCode.TAB && jQuery( this ).data( "ui-autocomplete" ).menu.active ) {
+              event.preventDefault();
+            }}).autocomplete({
+            minLength: 3,
+            source: function( request, response ) { response( jQuery.ui.autocomplete.filter( availableTags, extractLast( request.term ) ) ); },
+            focus: function() { return false; },
+            select: function( event, ui ) { 
+                var terms = split( this.value ); 
+                terms.pop(); 
+                terms.push( ui.item.value );
+                terms.push( "" );
+                this.value = terms.join( "\n" );
+                return false;
+            }
+          });
+        }
+
+        jQuery(document).on("click", jQuery("textarea[name=preconditions_and_assumptions]"), function() {
+            complete(jQuery("textarea[name=preconditions_and_assumptions]"));
+        });
+        jQuery(document).on('keydown',jQuery(".x-shadow").next().find('textarea'),function(){            
+            complete(jQuery(".x-shadow").next().find('textarea'));
+        });
+ });
+
+    </script>
   </body>
 </html>

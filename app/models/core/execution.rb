@@ -29,6 +29,7 @@ class Execution < ActiveRecord::Base
            :order => 'position'
 
   validates_presence_of :name, :test_object_id, :project_id, :date
+  validates_uniqueness_of :name, :scope => :project_id
 
   # Return all who have been assigned to execute cases for this execution.
   def assigned_to
@@ -167,6 +168,7 @@ class Execution < ActiveRecord::Base
     e = nil
     transaction do
       # 1) create execution
+      atts['date'] = atts['date'].split("T")[0]
       e = Execution.create!(atts)
       e.tag_with(tag_list) unless tag_list.blank?
 

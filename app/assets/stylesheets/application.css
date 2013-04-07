@@ -15,4 +15,5 @@
  *= require accordion
  *= require Ext.testia.AttachmentForm
  *= require Ext.testia.ListPanel
+ *= require ext/jquery-ui.min.css
  */

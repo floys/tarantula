@@ -6,6 +6,7 @@ GNU GPLv3.
 
 [www.testiatarantula.com](http://www.testiatarantula.com)
 
+
 # Install
 
 ## Requirements
@@ -184,3 +185,14 @@ reboot
 After reboot open web browser to tarantula hostname or ip to start
 using Tarantula. Login with name: admin, password: admin. Please
 change password on first login.
+
+## This is a fork that is intended to add folloving features to the original tarantula:
+- REST API
+- integration with Test Automation Tools
+- more versalite jira integration
+
+*for INSTALL instructions see README\_INSTALL.md*
+*for REST API see README\_REST\_API.md*
+*for Test Automation tool instructions see README\_AT.md*
+*for jira integration see README\_JIRA.md*
+

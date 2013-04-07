@@ -51,7 +51,6 @@ class CaseExecution < ActiveRecord::Base
     transaction do
       se_data.each do |se|
         step_execution = self.step_executions.find(se['id'])
-
         step_execution.update_attributes!({
           :result => ResultType.send(se['result']),
           :bug => se['bug'],
@@ -144,6 +143,14 @@ class CaseExecution < ActiveRecord::Base
     self.step_executions.map{|se| se.bug ? se.bug.to_s : nil}.compact.join(', ')
   end
 
+	def automated
+		tc = self.test_case
+    return false if tc.project.automation_tool.nil?
+		case_tags = tc.tags_to_s.split(",")
+		automation_tool_tag = tc.project.automation_tool.automation_tag
+		case_tags.include?(automation_tool_tag)
+	end
+
   def to_data(*opts)
     tc = self.test_case
     history = tc.history # history before revert (cache_key)
@@ -163,11 +170,27 @@ class CaseExecution < ActiveRecord::Base
             :objective     => tc.objective,
             :test_data     => tc.test_data,
             :preconditions_and_assumptions => tc.preconditions_and_assumptions,
-            :tags          => tc.tags_to_s}
+            :tags          => tc.tags_to_s,
+						:blocked => blocked,
+						:automated => automated
+					}
 
     data.merge!(:steps => step_executions.map(&:to_data)) if opts.include?(:include_steps)
     data
   end
+
+	def represent_as_bug(current_step_position)
+    tc = self.test_case
+		bug_details="\nPreconditions\n  #{tc.preconditions_and_assumptions}\n"
+		bug_details+="Steps\n"
+    failed_step = nil
+		tc.steps.each{|step|
+			bug_details+="  #{step.position}. #{step.action}\n"
+			break if step.position == current_step_position
+		}
+		bug_details+="Results\n #{self.step_executions[current_step_position-1].comment} \n"
+		bug_details+="Expected\n  \n"
+	end
 
   def executed_by
     executor.try(:name)
@@ -222,13 +245,11 @@ class CaseExecution < ActiveRecord::Base
   def result=(r); self['result'] = r.db; end
 
   define_csv do
-    attribute :id,                        'Case Execution Id', 
-              :identifier => true
-    field :title,                         'Case'
-    field :objective,                     'Objective'
-    field :test_data,                     'Test Data'
+    attribute :id, 'Case Execution Id', :identifier => true
+    field :title, 'Case'
+    field :objective, 'Objective'
+    field :test_data, 'Test Data'
     field :preconditions_and_assumptions, 'Preconditions & Assumptions'
     children :step_executions
   end
-
 end

@@ -34,7 +34,6 @@ class Jira < BugTracker
     end
   end
 
-
   ### PUBLIC BUG TRACKER INTERFACE ###
   def bugs_for_project(proj, user=nil)
     if user and (ta = user.test_area(proj)) and ta.forced and !ta.bug_product_ids.empty?
@@ -145,6 +144,7 @@ class Jira < BugTracker
      :type => self["type"],
      :name => self.name,
      :base_url => self.base_url,
+     :db_adapter => self.import_source.adapter,
      :db_host => self.import_source.host,
      :db_port => self.import_source.port,
      :db_name => self.import_source.database,
@@ -166,11 +166,13 @@ class Jira < BugTracker
     se = StepExecution.find(opts[:step_execution_id])
     bp = BugProduct.find_by_name(opts[:product])
     name = se.case_execution.test_case.name
-    comment = "[Tarantula] Case \"#{name}\", Step #{se.position}"
+    comment = se.case_execution.represent_as_bug(se.position)
+
 
     url = self.base_url.chomp('/')
     url += "/secure/CreateIssueDetails!init.jspa?#{bp.external_id.to_s.to_query(:pid) if bp}" +
-      "&issuetype=1&#{comment.to_query(:description)}"
+      "&issuetype=1&summary=#{name.gsub(/\s/,"+")}&description=#{comment}"
+		url
   end
 
   def bug_label(bug)

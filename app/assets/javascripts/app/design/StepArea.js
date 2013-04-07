@@ -22,13 +22,13 @@ Ext.extend(Ext.testia.StepArea, Ext.testia.StepField,  {
      */
     preventScrollbars: false,
 
-    // private
-    onRender : function(ct, position){
-        if(!this.el){
+    // private    
+    onRender : function(ct, position){                      
+        if(!this.el){            
             this.defaultAutoCreate = {
                 tag: "textarea",
                 style:"width:300px;height:60px;",
-                autocomplete: "off"
+                autocomplete: "on"
             };
         }
         Ext.testia.StepArea.superclass.onRender.call(this, ct, position);
@@ -41,10 +41,10 @@ Ext.extend(Ext.testia.StepArea, Ext.testia.StepField,  {
                 this.el.setStyle("overflow", "hidden");
             }
             this.el.setHeight(this.growMin);
-        }
+        }        
     },
 
-    onDestroy : function(){
+    onDestroy : function(){        
         if(this.textSizeEl){
             this.textSizeEl.parentNode.removeChild(this.textSizeEl);
         }
@@ -52,7 +52,7 @@ Ext.extend(Ext.testia.StepArea, Ext.testia.StepField,  {
     },
 
     // private
-    onKeyUp : function(e){
+    onKeyUp : function(e){        
         if(!e.isNavKeyPress() || e.getKey() == e.ENTER){
             this.autoSize();
         }

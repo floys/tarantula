@@ -147,7 +147,21 @@ Tarantula::Application.routes do
     end
   end
 
+	resources :automation_tools
+
   resources :backups, :only => [:new, :create]
   resources :csv_exports, :only => [:new, :create]
   resources :csv_imports, :only => [:new, :create]
+	match '/api/test', :controller => 'api', :action => 'test', :via => :get
+	match '/api/create_testcase', :controller => 'api', :action => 'create_testcase', :via => :post
+	match '/api/update_testcase_execution', :controller => 'api', :action => 'update_testcase_execution', :via => :post
+	match '/api/unblock_testcase_execution', :controller => 'api', :action => 'unblock_testcase_execution', :via => :post
+	match '/api/block_testcase_execution', :controller => 'api', :action => 'block_testcase_execution', :via => :post
+	match '/api/get_scenarios', :controller => 'api', :action => 'get_scenarios', :via => :post
+	match '/api/update_testcase_step', :controller => 'api', :action => 'update_testcase_step', :via => :post
+	match '/api/update_testcase_duration', :controller => 'api', :action => 'update_testcase_duration', :via => :post
+	match '/automation/execute', :controller => 'automation', :action => 'execute', :via => :get
+	match '/automation/get_sentences', :controller => 'automation', :action => 'get_sentences', :via => :get
+	match "/case_executions/automated/:id", :controller => 'case_executions', :action => 'automated', :via => :get
+	match "/export/items", :controller => 'export', :action => 'export_items', :via => :get
 end

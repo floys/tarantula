@@ -642,6 +642,18 @@ Ext.ux.ListPanel = function(el, config, initial_load) {
             })
         );
 
+        this.itemContext.add(
+            new Ext.menu.Item({
+                // TODO: Change text between Delete/Undelete depending on
+                // current folder.
+                text:'Export',
+                scope: this,
+                handler: function(c,e) {
+                    this.exportItems();
+                }
+            })
+        );
+
         if (this.archiveUrl) {
             this.itemContext.add(
                 new Ext.menu.Item({
@@ -764,6 +776,19 @@ Ext.extend(Ext.ux.ListPanel, Ext.ContentPanel, {
             scope: this,
             success: function() {
                 this.reload();
+            }
+        });
+    },
+    exportItems: function() {
+        var ids = this.selectedItems.map(function(i) {return i.dbid;}).join(',');
+        Ext.Ajax.request({
+            url: "/export/items",
+            method: 'get',
+            params: {ids: ids, type: this.taggableType},
+            scope: this,
+            success: function(response, request){
+              path = Ext.decode(response.responseText).data.path;
+              window.location = path;
             }
         });
     },

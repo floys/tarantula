@@ -26,6 +26,7 @@ class Project < ActiveRecord::Base
   has_many :test_sets, :dependent => :destroy
   has_many :executions, :dependent => :destroy
   has_many :test_objects, :dependent => :destroy
+  has_many :sentences, :dependent => :destroy
 
   # All of project's tags in all resources
   has_many :tags, :dependent => :destroy
@@ -38,10 +39,11 @@ class Project < ActiveRecord::Base
   has_many :preferences, :class_name => 'Preference::Base', :dependent => :destroy
 
   belongs_to :bug_tracker
+  belongs_to :automation_tool
   has_and_belongs_to_many :bug_products
 
   validates_presence_of :name
-  validates_uniqueness_of :name, :case_sensitive => false
+ # validates_uniqueness_of :name, :case_sensitive => false
 
   before_destroy do |proj|
     ProjectAssignment.destroy_all(:project_id => proj.id, :group => 'ADMIN')
@@ -56,28 +58,31 @@ class Project < ActiveRecord::Base
     self.bug_products.map{|prod| prod.bugs.s_open(prod.bug_tracker[:type])}.flatten
   end
 
-  def self.create_with_assignments!(atts, assigned_users, t_areas, b_products)
+  def self.create_with_assignments!(atts, assigned_users, t_areas, b_products, sentences)
     project = nil
     transaction do
       project = Project.create!(atts)
       project.set_test_areas(t_areas)
       project.set_bug_products(b_products)
       project.set_users(assigned_users)
+      project.assign_sentences(sentences)
     end
     project
   end
 
-  def update_with_assignments!(updater, atts, assigned_users, t_areas, b_products)
+  def update_with_assignments!(updater, atts, assigned_users, t_areas, b_products, sentences)
     raise "At least manager rights required!" unless \
       updater.allowed_in_project?(self.id, ['MANAGER'])
     raise "Only admin can change project's name!" if \
       self.name != atts['name'] and !updater.admin?
+      self.assign_sentences(sentences)
 
     transaction do
       self.update_attributes!(atts)
       set_test_areas(t_areas)
       set_bug_products(b_products)
       set_users(assigned_users)
+
 
       # Make sure that current is user is at least manager of current project.
       # This prevents user from accidentally removing user access from himself.
@@ -113,7 +118,9 @@ class Project < ActiveRecord::Base
       :id => self.id,
       :library => self.library,
       :test_areas => self.test_areas.map(&:name).join(','),
-      :bug_tracker_id => self.bug_tracker_id
+      :bug_tracker_id => self.bug_tracker_id,
+      :automation_tool_id => self.automation_tool_id,
+      :sentences => self.sentences.collect(&:value).join("\n")
     }
   end
 
@@ -188,6 +195,13 @@ class Project < ActiveRecord::Base
       ta.destroy unless tas.include?(ta.name)
     end
     self.test_areas
+  end
+
+  def assign_sentences(sentences)
+    self.sentences.delete_all
+    sentences.split("\n").collect(&:chomp).collect{ |s| 
+      self.sentences.create(:value => s)
+    } 
   end
 
 end

@@ -1,3 +1,5 @@
+
+# encoding: UTF-8
 =begin rdoc
 
 A test case.
@@ -41,6 +43,7 @@ class Case < ActiveRecord::Base
 
   validates_presence_of :title, :project_id, :date
   validates_uniqueness_of :external_id, :scope => :project_id, :allow_nil => true
+  validate :sentence, :on => :save
 
   after_create :copy_attachments_from_original
 
@@ -118,7 +121,7 @@ class Case < ActiveRecord::Base
     transaction do
       ce_id = atts.delete(:case_execution_id)
       eid = atts.delete(:execution_id)
-
+      atts[:date]=atts[:date].split('T')[0]
       c = Case.create!(atts)
       c.steps << step_data.map{ |s| Step.new(s) }
       c.tag_with(tag_list) if tag_list
@@ -357,6 +360,29 @@ class Case < ActiveRecord::Base
     ret
   end
 
+  def to_feature(lang) # this is for Cucumber integration
+    Sentence.lang = lang
+    keywords = Sentence.keywords
+    raise "Cucumber does not support #{lang}" if keywords.nil? or keywords["feature"].nil? or keywords["background"].nil? or keywords["scenario"].nil?
+    scenario = ''
+    scenario += "#{keywords["feature"]}: #{ self.title }\n"
+    scenario += "#{self.objective}\n"
+    scenario += "#{keywords["background"]}:\n"
+    scenario += self.preconditions_and_assumptions.split("\n").collect{ |s| Sentence.prepare(s) }.join("\n").chomp + "\n\n"
+    i = 0
+    self.steps.each{|step|
+      i+=1
+      scenario_title = keywords["scenario"]+': ' + i.to_s
+      scenario += "#{scenario_title}\n" if not (step.action =~ /^#{keywords["scenario"]}:(.+)$/ or step.action =~ /^#{keywords["scenario_outline"]}:(.+)$/)
+      step.action.split("\n").each{ |s|
+        
+      }
+      scenario += "#{step.action.split("\n").collect{ |s| Sentence.prepare(s) }.join("\n").chomp}\n"
+      scenario += "#{step.result.split("\n").collect{ |s| Sentence.prepare(s) }.join("\n").chomp}\n\n"
+    }
+    scenario
+  end
+
   def copy_to(target_project, user, test_area_ids=nil)
     # Don't allow copying if target test area doesn't belong to target project
     if !test_area_ids.blank? and
@@ -430,12 +456,10 @@ class Case < ActiveRecord::Base
         self.steps << step
       end
       self.tag_with((tag_list || ''))
-
-      if ce
-        ce = self.case_executions.find(ce)
+      self.case_executions.each{ |ce| 
         ce.update_case_version(self.version, User.find(atts[:updated_by]))
         ce.update_attributes!({:title => self.title})
-      end
+      }
     end
   end
 
@@ -538,5 +562,32 @@ class Case < ActiveRecord::Base
     attribute   :preconditions_and_assumptions, 'Preconditions & Assumptions'
     children    :steps
   end
-  
+  private
+
+  def sentence  
+    sents = self.project.sentences.collect(&:value)
+    unless self.project.sentences.empty?
+      self.preconditions_and_assumptions.split("\n").each{|s|
+        unless sents.include? Sentence.strip(s)
+          errors.add(:sentence, "\"#{Sentence.strip(s)}\" - Unknown")
+          return false
+        end
+      }
+      self.steps.each{|step|
+        step.action.split("\n").each{|s|
+          unless sents.include? Sentence.strip(s)
+            errors.add(:sentence, "\"#{Sentence.strip(s)}\" - Unknown")
+            return false
+          end
+        }
+        step.result.split("\n").each{|s|
+          unless sents.include? Sentence.strip(s)
+            errors.add(:sentence, "\"#{Sentence.strip(s)}\" - Unknown")
+            return false
+          end
+        }
+      }
+    end
+    true
+  end
 end
