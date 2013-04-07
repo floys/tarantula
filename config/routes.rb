@@ -1,6 +1,6 @@
 Tarantula::Application.routes do
   root :to => "home#index"
-  
+
   resource :archive, :only => [:destroy, :create],
     :path => '/projects/:project_id/:resources/archive',
     :controller => 'archives'
@@ -13,7 +13,7 @@ Tarantula::Application.routes do
       delete :deleted
       get :products
     end
-    
+
     collection do
       get :deleted
     end
@@ -42,13 +42,13 @@ Tarantula::Application.routes do
       resources :attachments
     end
     resources :test_areas
-    
+
     resources :bug_trackers do
       member do
         get :products
       end
     end
-    
+
     resources :bugs
   end
 
@@ -95,7 +95,7 @@ Tarantula::Application.routes do
     collection do
       get :deleted
     end
-    
+
     resources :projects do
       member do
         get :group
@@ -116,7 +116,7 @@ Tarantula::Application.routes do
 
   resources :customer_configs
   match 'restart', :to => 'customer_configs#restart'
-  
+
   resource :report, :controller => 'report' do
     member do
       get :dashboard
@@ -130,7 +130,7 @@ Tarantula::Application.routes do
       get :workload
     end
   end
-  
+
   resource :home, :controller => 'home' do
     member do
       get :login
@@ -138,7 +138,7 @@ Tarantula::Application.routes do
       get :logout
       get :index
     end
-  end               
+  end
 
   resource :import, :controller => 'import' do
     member do
@@ -147,21 +147,21 @@ Tarantula::Application.routes do
     end
   end
 
-	resources :automation_tools
+        resources :automation_tools
 
   resources :backups, :only => [:new, :create]
   resources :csv_exports, :only => [:new, :create]
   resources :csv_imports, :only => [:new, :create]
-	match '/api/test', :controller => 'api', :action => 'test', :via => :get
-	match '/api/create_testcase', :controller => 'api', :action => 'create_testcase', :via => :post
-	match '/api/update_testcase_execution', :controller => 'api', :action => 'update_testcase_execution', :via => :post
-	match '/api/unblock_testcase_execution', :controller => 'api', :action => 'unblock_testcase_execution', :via => :post
-	match '/api/block_testcase_execution', :controller => 'api', :action => 'block_testcase_execution', :via => :post
-	match '/api/get_scenarios', :controller => 'api', :action => 'get_scenarios', :via => :post
-	match '/api/update_testcase_step', :controller => 'api', :action => 'update_testcase_step', :via => :post
-	match '/api/update_testcase_duration', :controller => 'api', :action => 'update_testcase_duration', :via => :post
-	match '/automation/execute', :controller => 'automation', :action => 'execute', :via => :get
-	match '/automation/get_sentences', :controller => 'automation', :action => 'get_sentences', :via => :get
-	match "/case_executions/automated/:id", :controller => 'case_executions', :action => 'automated', :via => :get
-	match "/export/items", :controller => 'export', :action => 'export_items', :via => :get
+        match '/api/test', :controller => 'api', :action => 'test', :via => :get
+        match '/api/create_testcase', :controller => 'api', :action => 'create_testcase', :via => :post
+        match '/api/update_testcase_execution', :controller => 'api', :action => 'update_testcase_execution', :via => :post
+        match '/api/unblock_testcase_execution', :controller => 'api', :action => 'unblock_testcase_execution', :via => :post
+        match '/api/block_testcase_execution', :controller => 'api', :action => 'block_testcase_execution', :via => :post
+        match '/api/get_scenarios', :controller => 'api', :action => 'get_scenarios', :via => :post
+        match '/api/update_testcase_step', :controller => 'api', :action => 'update_testcase_step', :via => :post
+        match '/api/update_testcase_duration', :controller => 'api', :action => 'update_testcase_duration', :via => :post
+        match '/automation/execute', :controller => 'automation', :action => 'execute', :via => :get
+        match '/automation/get_sentences', :controller => 'automation', :action => 'get_sentences', :via => :get
+        match "/case_executions/automated/:id", :controller => 'case_executions', :action => 'automated', :via => :get
+        match "/export/items", :controller => 'export', :action => 'export_items', :via => :get
 end

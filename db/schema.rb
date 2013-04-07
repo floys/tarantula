@@ -12,7 +12,6 @@
 # It's strongly recommended to check this file into your version control system.
 
 ActiveRecord::Schema.define(:version => 20130302151107) do
-
   create_table "attachment_sets", :force => true do |t|
     t.datetime "created_at"
     t.datetime "updated_at"
